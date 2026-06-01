@@ -1,6 +1,6 @@
 import { executeApiRequest } from './api.service';
 import { Microservice, RequestType } from '../types/api.types';
-import { Organisation, OrganisationPage, ApiKey } from '../types/organisation.types';
+import { Organisation, OrganisationPage, ApiKey, OrgRole } from '../types/organisation.types';
 
 export const organisationService = {
   async list(page = 1, pageSize = 10): Promise<OrganisationPage> {
@@ -17,6 +17,39 @@ export const organisationService = {
       path: '/organisations',
       type: RequestType.POST,
       body: { name },
+    });
+  },
+
+  async getOrg(orgId: string): Promise<Organisation> {
+    return executeApiRequest<Organisation>({
+      microservice: Microservice.ORGANISATION,
+      path: `/organisations/${orgId}`,
+      type: RequestType.GET,
+    });
+  },
+
+  async getRole(orgId: string): Promise<OrgRole> {
+    return executeApiRequest<OrgRole>({
+      microservice: Microservice.ORGANISATION,
+      path: `/organisations/${orgId}/role`,
+      type: RequestType.GET,
+    });
+  },
+
+  async updateOrg(orgId: string, name: string): Promise<void> {
+    await executeApiRequest({
+      microservice: Microservice.ORGANISATION,
+      path: `/organisations/${orgId}`,
+      type: RequestType.PUT,
+      body: { name },
+    });
+  },
+
+  async deleteOrg(orgId: string): Promise<void> {
+    await executeApiRequest({
+      microservice: Microservice.ORGANISATION,
+      path: `/organisations/${orgId}`,
+      type: RequestType.DELETE,
     });
   },
 

@@ -18,6 +18,12 @@ export interface OrganisationPage {
 // POST /organisations — raw org object (no success/data wrapper)
 export type CreateOrganisationResponse = Organisation;
 
+export type OrgRoleName = 'Admin' | 'Editor' | 'Viewer';
+
+export interface OrgRole {
+  role: OrgRoleName;
+}
+
 export interface ApiKey {
   id: string;
   organisationId: string;

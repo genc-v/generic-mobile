@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
-  View, Text, ScrollView, TouchableOpacity, FlatList, ActivityIndicator,
+  View, Text, ScrollView, TouchableOpacity, FlatList,
+  ActivityIndicator, TextInput, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,10 +13,13 @@ import { BottomTabBar, ContentTab } from '../../../components/content/BottomTabB
 import { ApiKeyCard } from '../../../components/keys/ApiKeyCard';
 import { GenerateKeySheet } from '../../../components/keys/GenerateKeySheet';
 import { RevealKeySheet } from '../../../components/keys/RevealKeySheet';
+import { PrimaryBtn, GhostBtn } from '../../../components/ui/button';
 import { useContentList, StatusFilter } from '../../../viewmodels/useContentList';
 import { useApiKeys } from '../../../viewmodels/useApiKeys';
+import { useOrgSettings } from '../../../viewmodels/useOrgSettings';
 import { styles } from '../../../styles/app/content-list.styles';
 import { styles as keyStyles } from '../../../styles/app/api-keys.styles';
+import { styles as settingsStyles } from '../../../styles/app/org-settings.styles';
 import { DS } from '../../../constants/ds';
 
 const FILTERS: StatusFilter[] = ['All', 'New', 'Draft', 'Published', 'Unpublished'];
@@ -24,8 +28,11 @@ export default function OrgDashboard() {
   const { orgId } = useLocalSearchParams<{ orgId: string }>();
   const vm = useContentList(orgId);
   const keysVm = useApiKeys(orgId);
+  const settingsVm = useOrgSettings(orgId);
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<ContentTab>('Content');
+
+  const { canManageOrg, canEdit } = settingsVm;
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -33,7 +40,7 @@ export default function OrgDashboard() {
 
       <TopBar title={activeTab} />
 
-      {activeTab === 'Content' ? (
+      {activeTab === 'Content' && (
         <>
           <SearchBar
             placeholder={`Search ${vm.totalCount} entries…`}
@@ -74,7 +81,9 @@ export default function OrgDashboard() {
           ) : vm.entries.length === 0 ? (
             <View style={[styles.centred, styles.scrollEmpty]}>
               <Text style={styles.emptyText}>No entries yet.</Text>
-              <Text style={styles.emptyHint}>Tap + New entry to create one.</Text>
+              <Text style={styles.emptyHint}>
+                {canEdit ? 'Tap + New entry to create one.' : 'Nothing here yet.'}
+              </Text>
             </View>
           ) : (
             <FlatList
@@ -112,22 +121,26 @@ export default function OrgDashboard() {
             />
           )}
 
-          <TouchableOpacity
-            style={[styles.fab, { bottom: insets.bottom + 64 }]}
-            onPress={vm.handleNewEntry}
-            disabled={vm.creating}
-            activeOpacity={0.85}
-          >
-            {vm.creating
-              ? <ActivityIndicator size="small" color="#0A0A0A" />
-              : <>
-                <Text style={styles.fabPlus}>+</Text>
-                <Text style={styles.fabLabel}>New entry</Text>
-              </>
-            }
-          </TouchableOpacity>
+          {canEdit && (
+            <TouchableOpacity
+              style={[styles.fab, { bottom: insets.bottom + 64 }]}
+              onPress={vm.handleNewEntry}
+              disabled={vm.creating}
+              activeOpacity={0.85}
+            >
+              {vm.creating
+                ? <ActivityIndicator size="small" color="#0A0A0A" />
+                : <>
+                  <Text style={styles.fabPlus}>+</Text>
+                  <Text style={styles.fabLabel}>New entry</Text>
+                </>
+              }
+            </TouchableOpacity>
+          )}
         </>
-      ) : activeTab === 'Keys' ? (
+      )}
+
+      {activeTab === 'Keys' && (
         <>
           {keysVm.loading ? (
             <View style={[keyStyles.centred, styles.scrollEmpty]}>
@@ -185,14 +198,164 @@ export default function OrgDashboard() {
             onDismiss={keysVm.dismissReveal}
           />
         </>
-      ) : (
+      )}
+
+      {activeTab === 'Settings' && (
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <ScrollView
+            contentContainerStyle={settingsTabStyles.scroll}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <Text style={settingsTabStyles.sectionLabel}>ORGANISATION</Text>
+            <View style={settingsTabStyles.card}>
+              <Text style={settingsTabStyles.label}>Name</Text>
+              <TextInput
+                style={settingsTabStyles.input}
+                value={settingsVm.editName}
+                onChangeText={settingsVm.setEditName}
+                placeholder="Organisation name"
+                placeholderTextColor={DS.text4}
+                autoCapitalize="words"
+              />
+              {settingsVm.error && (
+                <Text style={settingsTabStyles.errorText}>{settingsVm.error}</Text>
+              )}
+              <PrimaryBtn
+                label="Save Changes"
+                full
+                onPress={settingsVm.handleSave}
+                loading={settingsVm.saving}
+              />
+            </View>
+
+            <Text style={[settingsTabStyles.sectionLabel, { marginTop: 28 }]}>DANGER ZONE</Text>
+            <View style={settingsTabStyles.card}>
+              {settingsVm.confirmDelete ? (
+                <>
+                  <Text style={settingsTabStyles.confirmText}>
+                    This will permanently delete the organisation and all its data. This cannot be undone.
+                  </Text>
+                  <View style={settingsTabStyles.confirmActions}>
+                    <View style={{ flex: 1 }}>
+                      <GhostBtn
+                        label="Cancel"
+                        full
+                        onPress={() => settingsVm.setConfirmDelete(false)}
+                      />
+                    </View>
+                    <View style={{ width: 10 }} />
+                    <View style={{ flex: 1 }}>
+                      <PrimaryBtn
+                        label="Delete"
+                        full
+                        onPress={settingsVm.handleDelete}
+                        loading={settingsVm.deleting}
+                      />
+                    </View>
+                  </View>
+                </>
+              ) : (
+                <TouchableOpacity
+                  style={settingsTabStyles.deleteBtn}
+                  onPress={settingsVm.handleDelete}
+                  activeOpacity={0.7}
+                >
+                  <Text style={settingsTabStyles.deleteBtnLabel}>Delete Organisation</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      )}
+
+      {activeTab !== 'Content' && activeTab !== 'Keys' && activeTab !== 'Settings' && (
         <View style={[styles.centred, styles.scrollEmpty]}>
           <Text style={styles.emptyText}>{activeTab}</Text>
           <Text style={styles.emptyHint}>Coming soon.</Text>
         </View>
       )}
 
-      <BottomTabBar active={activeTab} onPress={setActiveTab} adminView />
+      <BottomTabBar
+        active={activeTab}
+        onPress={setActiveTab}
+        adminView={canManageOrg}
+      />
     </SafeAreaView>
   );
 }
+
+import { StyleSheet } from 'react-native';
+
+const settingsTabStyles = StyleSheet.create({
+  scroll: {
+    padding: 16,
+    paddingBottom: 120,
+  },
+  sectionLabel: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: DS.text3,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: 10,
+  },
+  card: {
+    backgroundColor: DS.surface2,
+    borderWidth: 1,
+    borderColor: DS.border,
+    borderRadius: 10,
+    padding: 16,
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: DS.text1,
+    marginBottom: 8,
+    letterSpacing: -0.1,
+  },
+  input: {
+    height: 40,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: DS.border2,
+    backgroundColor: DS.bg,
+    paddingHorizontal: 12,
+    fontSize: 14,
+    color: DS.text1,
+    letterSpacing: -0.1,
+    marginBottom: 16,
+  },
+  errorText: {
+    fontSize: 13,
+    color: DS.red,
+    fontWeight: '500',
+    marginBottom: 12,
+  },
+  confirmText: {
+    fontSize: 13,
+    color: DS.text2,
+    lineHeight: 19,
+    marginBottom: 14,
+  },
+  confirmActions: {
+    flexDirection: 'row',
+  },
+  deleteBtn: {
+    height: 44,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(239,68,68,0.3)',
+    backgroundColor: 'rgba(239,68,68,0.07)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  deleteBtnLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: DS.red,
+  },
+});

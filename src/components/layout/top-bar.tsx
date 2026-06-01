@@ -1,10 +1,11 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { ReactNode } from 'react';
 import { useRouter } from 'expo-router';
 import { DS } from '../../constants/ds';
 
-type Props = { title: string };
+type Props = { title: string; right?: ReactNode };
 
-export function TopBar({ title }: Props) {
+export function TopBar({ title, right }: Props) {
   const router = useRouter();
   return (
     <View style={styles.row}>
@@ -13,7 +14,7 @@ export function TopBar({ title }: Props) {
         <View style={styles.chevL2} />
       </TouchableOpacity>
       <Text style={styles.title}>{title}</Text>
-      <View style={styles.spacer} />
+      <View style={styles.spacer}>{right ?? null}</View>
     </View>
   );
 }
