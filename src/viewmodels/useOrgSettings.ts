@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { organisationService } from '../services/organisation.service';
+import { cache, CACHE_KEYS } from '../utils/cache';
 import { OrgRoleName } from '../types/organisation.types';
 
 export function useOrgSettings(orgId: string) {
   const router = useRouter();
 
-  const [role, setRole] = useState<OrgRoleName | null>(null);
-  const [editName, setEditName] = useState('');
-  const [loadingRole, setLoadingRole] = useState(true);
+  const cachedRole = cache.getSync<OrgRoleName>(CACHE_KEYS.orgRole(orgId)) ?? null;
+  const cachedName = cache.getSync<string>(CACHE_KEYS.org(orgId)) ?? '';
+
+  const [role, setRole] = useState<OrgRoleName | null>(cachedRole);
+  const [editName, setEditName] = useState(cachedName);
+  const [loadingRole, setLoadingRole] = useState(!(cachedRole && cachedName));
 
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -16,16 +20,35 @@ export function useOrgSettings(orgId: string) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let active = true;
+
+    if (!(cachedRole && cachedName)) {
+      Promise.all([
+        cache.get<OrgRoleName>(CACHE_KEYS.orgRole(orgId)),
+        cache.get<string>(CACHE_KEYS.org(orgId)),
+      ]).then(([r, n]) => {
+        if (!active) return;
+        if (r) setRole(r);
+        if (n) setEditName(n);
+        if (r && n) setLoadingRole(false);
+      });
+    }
+
     Promise.all([
       organisationService.getRole(orgId),
       organisationService.getOrg(orgId),
     ])
       .then(([roleData, orgData]) => {
+        if (!active) return;
         setRole(roleData.role);
         setEditName(orgData.name);
+        cache.set(CACHE_KEYS.orgRole(orgId), roleData.role);
+        cache.set(CACHE_KEYS.org(orgId), orgData.name);
       })
       .catch(() => {})
-      .finally(() => setLoadingRole(false));
+      .finally(() => { if (active) setLoadingRole(false); });
+
+    return () => { active = false; };
   }, [orgId]);
 
   const canManageOrg = role === 'Admin';
@@ -37,6 +60,7 @@ export function useOrgSettings(orgId: string) {
     setError(null);
     try {
       await organisationService.updateOrg(orgId, editName.trim());
+      cache.set(CACHE_KEYS.org(orgId), editName.trim());
     } catch {
       setError('Failed to save changes.');
     } finally {
@@ -52,6 +76,8 @@ export function useOrgSettings(orgId: string) {
     setDeleting(true);
     try {
       await organisationService.deleteOrg(orgId);
+      cache.remove(CACHE_KEYS.org(orgId));
+      cache.remove(CACHE_KEYS.orgRole(orgId));
       router.replace('/(app)');
     } catch {
       setError('Failed to delete organisation.');

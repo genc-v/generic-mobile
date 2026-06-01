@@ -7,6 +7,9 @@ export default function AppLayout() {
       screenOptions={{
         headerShown: false,
         contentStyle: { backgroundColor: DS.bg },
+        animation: 'default',
+        gestureEnabled: true,
+        freezeOnBlur: false,
       }}
     />
   );

@@ -1,5 +1,10 @@
 import { Stack } from 'expo-router';
+import { enableFreeze } from 'react-native-screens';
 import { DS } from '../constants/ds';
+
+// Disable react-freeze globally: when navigating back it suspends the
+// outgoing screen the moment it loses focus, blanking it mid-transition.
+enableFreeze(false);
 
 export default function RootLayout() {
   return (
@@ -7,6 +12,8 @@ export default function RootLayout() {
       screenOptions={{
         headerShown: false,
         contentStyle: { backgroundColor: DS.bg },
+        animation: 'default',
+        gestureEnabled: true,
       }}
     />
   );

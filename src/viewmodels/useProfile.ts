@@ -2,18 +2,35 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { profileService } from '../services/profile.service';
 import { authService } from '../services/auth.service';
+import { cache, CACHE_KEYS } from '../utils/cache';
 import { Profile } from '../types/profile.types';
 
 export function useProfile() {
   const router = useRouter();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const cached = cache.getSync<Profile>(CACHE_KEYS.profile) ?? null;
+  const [profile, setProfile] = useState<Profile | null>(cached);
+  const [loading, setLoading] = useState(!cached);
 
   useEffect(() => {
+    let active = true;
+
+    // Show the persisted copy instantly, then revalidate in the background.
+    if (!cached) {
+      cache.get<Profile>(CACHE_KEYS.profile).then(c => {
+        if (active && c) { setProfile(c); setLoading(false); }
+      });
+    }
+
     profileService.get()
-      .then(setProfile)
+      .then(p => {
+        if (!active) return;
+        setProfile(p);
+        cache.set(CACHE_KEYS.profile, p);
+      })
       .catch(() => {})
-      .finally(() => setLoading(false));
+      .finally(() => { if (active) setLoading(false); });
+
+    return () => { active = false; };
   }, []);
 
   function initials(): string {

@@ -9,6 +9,7 @@ import { TopBar } from '../../../components/layout/top-bar';
 import { OtpInput } from '../../../components/ui/otp-input';
 import { PrimaryBtn, GhostBtn } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
+import { Skeleton } from '../../../components/ui/Skeleton';
 import { useSecurity } from '../../../viewmodels/useSecurity';
 import { useSetup2fa } from '../../../viewmodels/useSetup2fa';
 import { useDisable2fa } from '../../../viewmodels/useDisable2fa';
@@ -106,7 +107,14 @@ export default function SecurityScreen() {
           <Text style={styles.sectionLabel}>ACCOUNT</Text>
           <View style={styles.card}>
             {vm.loadingAccount ? (
-              <ActivityIndicator color="#A78BFA" style={{ paddingVertical: 12 }} />
+              <View style={{ gap: 18 }}>
+                {[0, 1, 2, 3].map(i => (
+                  <View key={i} style={{ gap: 8 }}>
+                    <Skeleton width="30%" height={11} />
+                    <Skeleton height={40} radius={8} />
+                  </View>
+                ))}
+              </View>
             ) : (
               <>
                 <Input label="Email" placeholder="you@example.com" value={vm.email} onChangeText={vm.setEmail} keyboardType="email-address" />

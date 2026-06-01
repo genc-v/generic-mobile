@@ -27,13 +27,18 @@ export function useContentList(orgId: string) {
   const [showFilters, setShowFilters] = useState(false);
 
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasLoaded = useRef(false);
 
+  // `silent` refetches keep the current list on screen instead of flipping to a
+  // full-screen spinner — used on focus so returning to the screen doesn't blank
+  // it mid-transition.
   const fetchEntries = useCallback(async (
     query: string,
     status: StatusFilter,
     adv: AdvancedFilters,
+    silent = false,
   ) => {
-    setLoading(true);
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const data = await contentService.listEntries(orgId, {
@@ -45,17 +50,19 @@ export function useContentList(orgId: string) {
         toDate: adv.toDate || undefined,
       });
       setEntries(data);
+      hasLoaded.current = true;
     } catch (e: any) {
       setError(e?.message ?? 'Failed to load entries.');
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, [orgId]);
 
-  // Reload on focus (returning from the editor) with the current filters.
+  // Refetch on focus, but silently once the first load has happened so the
+  // existing list stays visible while a back transition plays.
   useFocusEffect(
     useCallback(() => {
-      fetchEntries(search, filter, advanced);
+      fetchEntries(search, filter, advanced, hasLoaded.current);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fetchEntries]),
   );

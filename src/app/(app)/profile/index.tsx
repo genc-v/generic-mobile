@@ -1,8 +1,8 @@
-import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { TopBar } from '../../../components/layout/top-bar';
-import { DS } from '../../../constants/ds';
+import { Skeleton } from '../../../components/ui/Skeleton';
 import { useProfile } from '../../../viewmodels/useProfile';
 import { styles } from '../../../styles/app/profile/profile.styles';
 
@@ -38,14 +38,20 @@ export default function ProfileScreen() {
       <TopBar title="Profile" />
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={styles.avatarWrap}>
-          <View style={styles.avatar}>
-            {vm.loading
-              ? <ActivityIndicator color={DS.accent} />
-              : <Text style={styles.avatarText}>{vm.initials()}</Text>
-            }
-          </View>
+          {vm.loading ? (
+            <Skeleton width={80} height={80} radius={40} />
+          ) : (
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>{vm.initials()}</Text>
+            </View>
+          )}
         </View>
-        {vm.profile && (
+        {vm.loading ? (
+          <View style={[styles.info, { alignItems: 'center', gap: 8 }]}>
+            <Skeleton width={140} height={16} />
+            <Skeleton width={200} height={12} />
+          </View>
+        ) : vm.profile && (
           <View style={styles.info}>
             <Text style={styles.displayName}>{vm.displayLabel()}</Text>
             {vm.profile.bio && <Text style={styles.bio}>{vm.profile.bio}</Text>}

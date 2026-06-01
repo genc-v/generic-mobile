@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react';
 import { profileService } from '../services/profile.service';
+import { cache, CACHE_KEYS } from '../utils/cache';
 import { Profile } from '../types/profile.types';
 
 export function useAccountSettings() {
-  const [fetching, setFetching] = useState(true);
+  const cached = cache.getSync<Profile>(CACHE_KEYS.profile) ?? null;
+  const [fetching, setFetching] = useState(!cached);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [displayName, setDisplayName] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [bio, setBio] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [timezone, setTimezone] = useState('');
+  const [displayName, setDisplayName] = useState(cached?.displayName ?? '');
+  const [firstName, setFirstName] = useState(cached?.firstName ?? '');
+  const [lastName, setLastName] = useState(cached?.lastName ?? '');
+  const [bio, setBio] = useState(cached?.bio ?? '');
+  const [phoneNumber, setPhoneNumber] = useState(cached?.phoneNumber ?? '');
+  const [timezone, setTimezone] = useState(cached?.timezone ?? '');
 
   function populate(p: Profile) {
     setDisplayName(p.displayName ?? '');
@@ -25,10 +27,24 @@ export function useAccountSettings() {
   }
 
   useEffect(() => {
+    let active = true;
+
+    if (!cached) {
+      cache.get<Profile>(CACHE_KEYS.profile).then(c => {
+        if (active && c) { populate(c); setFetching(false); }
+      });
+    }
+
     profileService.get()
-      .then(populate)
-      .catch(() => setError('Failed to load profile.'))
-      .finally(() => setFetching(false));
+      .then(p => {
+        if (!active) return;
+        populate(p);
+        cache.set(CACHE_KEYS.profile, p);
+      })
+      .catch(() => { if (active) setError('Failed to load profile.'); })
+      .finally(() => { if (active) setFetching(false); });
+
+    return () => { active = false; };
   }, []);
 
   async function handleSave() {
@@ -37,6 +53,8 @@ export function useAccountSettings() {
     setSuccess(false);
     try {
       await profileService.update({ displayName, firstName, lastName, bio, phoneNumber, timezone, avatarUrl: '' });
+      const prev = cache.getSync<Profile>(CACHE_KEYS.profile);
+      if (prev) cache.set(CACHE_KEYS.profile, { ...prev, displayName, firstName, lastName, bio, phoneNumber, timezone });
       setSuccess(true);
       setTimeout(() => setSuccess(false), 2500);
     } catch {

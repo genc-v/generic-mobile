@@ -1,12 +1,13 @@
 import {
   View, Text, TextInput, ScrollView, TouchableOpacity,
-  KeyboardAvoidingView, Platform, ActivityIndicator,
+  KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { TopBar } from '../../../../components/layout/top-bar';
 import { PrimaryBtn, GhostBtn } from '../../../../components/ui/button';
+import { FormSkeleton } from '../../../../components/ui/skeletons';
 import { useOrgSettings } from '../../../../viewmodels/useOrgSettings';
 import { styles } from '../../../../styles/app/org-settings.styles';
 import { DS } from '../../../../constants/ds';
@@ -22,9 +23,7 @@ export default function EditOrganisation() {
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         {vm.loadingRole ? (
-          <View style={styles.placeholder}>
-            <ActivityIndicator color={DS.accent} />
-          </View>
+          <FormSkeleton fields={2} />
         ) : (
           <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
             <Text style={styles.sectionLabel}>DETAILS</Text>

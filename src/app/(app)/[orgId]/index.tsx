@@ -13,6 +13,7 @@ import { CategoryFormSheet } from '../../../components/content/CategoryFormSheet
 import { TagFormSheet } from '../../../components/content/TagFormSheet';
 import { ContentFiltersSheet } from '../../../components/content/ContentFiltersSheet';
 import { BottomTabBar, ContentTab } from '../../../components/content/BottomTabBar';
+import { ListSkeleton, SimpleListSkeleton, ChipSkeleton } from '../../../components/ui/skeletons';
 import { useContentList, StatusFilter } from '../../../viewmodels/useContentList';
 import { useOrgSettings } from '../../../viewmodels/useOrgSettings';
 import { useCategoryList } from '../../../viewmodels/useCategoryList';
@@ -103,9 +104,7 @@ export default function OrgDashboard() {
           </ScrollView>
 
           {vm.loading ? (
-            <View style={[styles.centred, styles.scrollEmpty]}>
-              <ActivityIndicator color={DS.accent} />
-            </View>
+            <ListSkeleton rows={6} />
           ) : vm.error ? (
             <View style={[styles.centred, styles.scrollEmpty]}>
               <Text style={styles.errorText}>{vm.error}</Text>
@@ -172,9 +171,7 @@ export default function OrgDashboard() {
           />
 
           {catVm.loading ? (
-            <View style={[catStyles.centred, styles.scrollEmpty]}>
-              <ActivityIndicator color={DS.accent} />
-            </View>
+            <SimpleListSkeleton rows={6} />
           ) : catVm.error ? (
             <View style={[catStyles.centred, styles.scrollEmpty]}>
               <Text style={catStyles.errorText}>{catVm.error}</Text>
@@ -242,9 +239,7 @@ export default function OrgDashboard() {
           />
 
           {tagVm.loading ? (
-            <View style={[tagStyles.centred, styles.scrollEmpty]}>
-              <ActivityIndicator color={DS.accent} />
-            </View>
+            <ChipSkeleton chips={10} />
           ) : tagVm.error ? (
             <View style={[tagStyles.centred, styles.scrollEmpty]}>
               <Text style={tagStyles.errorText}>{tagVm.error}</Text>

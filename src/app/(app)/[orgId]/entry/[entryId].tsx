@@ -9,6 +9,7 @@ import Svg, { Path } from 'react-native-svg';
 import { StatusPill, STATUS_COLOR } from '../../../../components/content/StatusPill';
 import { PickerSheet } from '../../../../components/content/PickerSheet';
 import { EntryPreviewModal } from '../../../../components/content/EntryPreviewModal';
+import { Skeleton } from '../../../../components/ui/Skeleton';
 import { PrimaryBtn, GhostBtn } from '../../../../components/ui/button';
 import { useEntryEditor } from '../../../../viewmodels/useEntryEditor';
 import { styles } from '../../../../styles/app/entry-editor.styles';
@@ -34,6 +35,27 @@ const TOOLS: { label: string; bold?: boolean; italic?: boolean; underline?: bool
   { label: '< >', action: { kind: 'wrap', prefix: '`' } },
   { label: '🔗', action: { kind: 'insert', snippet: '[text](url)', cursorOffset: 1 } },
 ];
+
+function EntryEditorSkeleton() {
+  return (
+    <View>
+      <Skeleton height={220} radius={0} />
+      <View style={{ padding: 20, gap: 16 }}>
+        <Skeleton width="65%" height={24} />
+        <View style={{ height: 1, backgroundColor: DS.border }} />
+        <View style={{ flexDirection: 'row', gap: 6 }}>
+          {[32, 32, 32, 40, 40].map((w, i) => <Skeleton key={i} width={w} height={32} radius={6} />)}
+        </View>
+        <Skeleton width="100%" height={14} />
+        <Skeleton width="92%" height={14} />
+        <Skeleton width="78%" height={14} />
+        <Skeleton width="40%" height={11} style={{ marginTop: 12 }} />
+        <Skeleton height={44} radius={8} />
+        <Skeleton height={44} radius={8} />
+      </View>
+    </View>
+  );
+}
 
 export default function EntryEditor() {
   const { orgId, entryId } = useLocalSearchParams<{ orgId: string; entryId: string }>();
@@ -83,9 +105,7 @@ export default function EntryEditor() {
       </View>
 
       {vm.loading ? (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator color={DS.accent} />
-        </View>
+        <EntryEditorSkeleton />
       ) : (
         <ScrollView
           contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 80 }]}

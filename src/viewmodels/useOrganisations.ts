@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
-import { useRouter } from 'expo-router';
+import { useState, useRef, useCallback } from 'react';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { organisationService } from '../services/organisation.service';
 import { Organisation } from '../types/organisation.types';
 
@@ -16,6 +16,7 @@ export function useOrganisations() {
 
   const currentPage = useRef(1);
   const hasMore = useRef(true);
+  const hasLoaded = useRef(false);
 
   const fetchPage = useCallback(async (page: number, replace: boolean) => {
     try {
@@ -24,16 +25,26 @@ export function useOrganisations() {
       hasMore.current = result.pageNumber < result.totalPages;
       currentPage.current = result.pageNumber;
       setOrgs(prev => replace ? result.items : [...prev, ...result.items]);
+      hasLoaded.current = true;
     } catch {
       setError('Failed to load organisations.');
     }
   }, []);
 
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    fetchPage(1, true).finally(() => setLoading(false));
-  }, [fetchPage]);
+  // Refetch on focus so renames/new orgs from other screens show up. First load
+  // shows the skeleton; later focuses refetch silently to keep the list visible.
+  useFocusEffect(
+    useCallback(() => {
+      if (!hasLoaded.current) {
+        setLoading(true);
+        setError(null);
+        fetchPage(1, true).finally(() => setLoading(false));
+      } else {
+        fetchPage(1, true);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [fetchPage]),
+  );
 
   const handleRefresh = useCallback(async () => {
     setError(null);

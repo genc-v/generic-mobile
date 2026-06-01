@@ -3,6 +3,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ApiKeyCard } from './ApiKeyCard';
 import { GenerateKeySheet } from './GenerateKeySheet';
 import { RevealKeySheet } from './RevealKeySheet';
+import { CardListSkeleton } from '../ui/skeletons';
 import { useApiKeys } from '../../viewmodels/useApiKeys';
 import { styles } from '../../styles/app/api-keys.styles';
 import { DS } from '../../constants/ds';
@@ -14,9 +15,7 @@ export function ApiKeysSection({ orgId }: { orgId: string }) {
   return (
     <>
       {vm.loading ? (
-        <View style={styles.centred}>
-          <ActivityIndicator color={DS.accent} />
-        </View>
+        <CardListSkeleton rows={3} />
       ) : vm.error ? (
         <View style={styles.centred}>
           <Text style={styles.errorText}>{vm.error}</Text>

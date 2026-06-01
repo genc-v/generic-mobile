@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Brand } from '../../components/ui/brand';
 import { OrgRow } from '../../components/organisations/OrgRow';
 import { CreateOrgSheet } from '../../components/organisations/CreateOrgSheet';
+import { ListSkeleton } from '../../components/ui/skeletons';
 import { useOrganisations } from '../../viewmodels/useOrganisations';
 import { styles } from '../../styles/app/organisations.styles';
 import { DS } from '../../constants/ds';
@@ -43,10 +44,12 @@ export default function OrganisationsScreen() {
         onEndReached={vm.handleEndReached}
         onEndReachedThreshold={0.3}
         onRefresh={vm.handleRefresh}
-        refreshing={vm.loading}
+        refreshing={vm.loading && vm.orgs.length > 0}
         ListHeaderComponent={vm.orgs.length > 0 ? <View style={styles.listCard} /> : null}
         ListEmptyComponent={
-          vm.loading ? null : vm.error ? (
+          vm.loading ? (
+            <ListSkeleton rows={5} />
+          ) : vm.error ? (
             <View style={styles.centred}>
               <Text style={styles.errorText}>{vm.error}</Text>
               <TouchableOpacity style={styles.retryBtn} onPress={vm.handleRefresh}>

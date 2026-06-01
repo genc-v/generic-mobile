@@ -1,6 +1,7 @@
 import * as SecureStore from "expo-secure-store";
 import { jwtDecode } from "jwt-decode";
 import { authState } from "../utils/auth-state";
+import { cache } from "../utils/cache";
 import {
   AuthLoginResponse,
   AuthRefreshResponse,
@@ -265,6 +266,7 @@ class AuthService {
       await Promise.all([
         SecureStore.deleteItemAsync(SECURE_STORE_KEYS.REFRESH_TOKEN),
         SecureStore.deleteItemAsync(SECURE_STORE_KEYS.JWT_TOKEN),
+        cache.clearAll(),
       ]);
     } catch (error) {
       console.error("Error clearing secure storage:", error);

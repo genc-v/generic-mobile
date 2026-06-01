@@ -1,10 +1,10 @@
-import { View, Text, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { TopBar } from '../../../components/layout/top-bar';
 import { Input } from '../../../components/ui/input';
 import { PrimaryBtn } from '../../../components/ui/button';
-import { DS } from '../../../constants/ds';
+import { FormSkeleton } from '../../../components/ui/skeletons';
 import { useAccountSettings } from '../../../viewmodels/useAccountSettings';
 import { styles } from '../../../styles/app/profile/account.styles';
 
@@ -17,9 +17,7 @@ export default function AccountSettingsScreen() {
       <TopBar title="Account Settings" />
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         {vm.fetching ? (
-          <View style={styles.centred}>
-            <ActivityIndicator color={DS.accent} />
-          </View>
+          <FormSkeleton fields={6} />
         ) : (
           <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
             <Input label="Display name" placeholder="How you appear to others" value={vm.displayName} onChangeText={vm.setDisplayName} />
