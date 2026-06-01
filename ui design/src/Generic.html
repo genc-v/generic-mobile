@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Generic — Headless CMS Mobile Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="generic-screens-1.jsx"></script>
+<script type="text/babel" src="generic-screens-2.jsx"></script>
+<script type="text/babel" src="generic-screens-3.jsx"></script>
+<script type="text/babel" src="generic-components.jsx"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #080809; font-family: 'Space Grotesk', sans-serif; }
+</style>
+</head>
+<body>
+<template id="__bundler_thumbnail" data-bg-color="#09090B">
+  <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+    <rect width="800" height="600" fill="#09090B"/>
+    <g transform="translate(400 300)">
+      <rect x="-130" y="-130" width="260" height="260" rx="40" fill="none" stroke="#27272A" stroke-width="2"/>
+      <text x="0" y="28" text-anchor="middle" font-family="Geist, -apple-system, sans-serif" font-size="180" font-weight="600" fill="#FAFAFA" letter-spacing="-12">G</text>
+    </g>
+    <text x="400" y="500" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="14" fill="#71717A" letter-spacing="2">GENERIC · CMS</text>
+  </svg>
+</template>
+<div id="root"></div>
+<script type="text/babel">
+const { DCSection, DCArtboard, DesignCanvas } = window;
+
+// Phone wrapper — adds a subtle bezel around each screen
+function Phone({ children }) {
+  return (
+    <div style={{
+      width: 390, height: 844,
+      borderRadius: 44,
+      background: '#0C0C0E',
+      border: '1px solid rgba(255,255,255,0.10)',
+      overflow: 'hidden',
+      boxShadow: '0 0 0 1px rgba(0,0,0,0.8), 0 24px 60px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.04)',
+      position: 'relative',
+      flexShrink: 0,
+    }}>
+      {/* Dynamic island */}
+      <div style={{
+        position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)',
+        width: 120, height: 34, borderRadius: 20,
+        background: '#000', zIndex: 100,
+      }} />
+      {/* Push content below dynamic island */}
+      <div style={{ paddingTop: 0 }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <DesignCanvas title="Generic — Headless CMS">
+
+      {/* ── GROUP 0: Component Library — reusable primitives ───────────── */}
+      <DCSection id="components" title="Components — Reusable primitives (use these when coding)">
+        <DCArtboard id="c1" label="Buttons" width={528} height={420}>
+          <CompButtons />
+        </DCArtboard>
+        <DCArtboard id="c2" label="Inputs & Forms" width={528} height={620}>
+          <CompInputs />
+        </DCArtboard>
+        <DCArtboard id="c3" label="Badges & Tags" width={528} height={420}>
+          <CompBadges />
+        </DCArtboard>
+        <DCArtboard id="c4" label="Cards & List Rows" width={528} height={520}>
+          <CompCards />
+        </DCArtboard>
+        <DCArtboard id="c5" label="Navigation" width={528} height={520}>
+          <CompNav />
+        </DCArtboard>
+        <DCArtboard id="c6" label="Avatar · Switch · Misc" width={528} height={420}>
+          <CompMisc />
+        </DCArtboard>
+        <DCArtboard id="c7" label="Color & Type Tokens" width={528} height={620}>
+          <CompTokens />
+        </DCArtboard>
+      </DCSection>
+
+      {/* ── GROUP 1: Authentication ─────────────────────────────────────── */}
+      <DCSection id="auth" title="Group 1 — Authentication">
+        <DCArtboard id="s1" label="01 Splash" width={390} height={844}>
+          <Phone><S1_Splash /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s2" label="02 Register" width={390} height={844}>
+          <Phone><S2_Register /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s3" label="03 Login" width={390} height={844}>
+          <Phone><S3_Login /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s4" label="04 Two-Factor Auth" width={390} height={844}>
+          <Phone><S4_TwoFA /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      {/* ── GROUP 2: Organisations ──────────────────────────────────────── */}
+      <DCSection id="orgs" title="Group 2 — Organisations">
+        <DCArtboard id="s5" label="05 My Organisations" width={390} height={844}>
+          <Phone><S5_MyOrgs /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s6" label="06 Create Organisation" width={390} height={844}>
+          <Phone><S6_CreateOrg /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      {/* ── GROUP 3: Org Dashboard ──────────────────────────────────────── */}
+      <DCSection id="dashboard" title="Group 3 — Org Dashboard">
+        <DCArtboard id="s7" label="07 Org Dashboard" width={390} height={844}>
+          <Phone><S7_OrgDashboard /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      {/* ── GROUP 4: Content Management ────────────────────────────────── */}
+      <DCSection id="content" title="Group 4 — Content Management">
+        <DCArtboard id="s8" label="08 Content List" width={390} height={844}>
+          <Phone><S8_ContentList /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s9" label="09 Content Editor" width={390} height={844}>
+          <Phone><S9_ContentEditor /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s10" label="10 Content Detail (read-only)" width={390} height={844}>
+          <Phone><S10_ContentDetail /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      {/* ── GROUP 5 & 6: Categories & Tags ─────────────────────────────── */}
+      <DCSection id="cats-tags" title="Groups 5 & 6 — Categories & Tags">
+        <DCArtboard id="s11" label="11 Category List" width={390} height={844}>
+          <Phone><S11_CategoryList /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s12" label="12 Create / Edit Category" width={390} height={844}>
+          <Phone><S12_CategoryForm /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s13" label="13 Tag List" width={390} height={844}>
+          <Phone><S13_TagList /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s14" label="14 Create / Edit Tag" width={390} height={844}>
+          <Phone><S14_TagForm /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      {/* ── GROUP 7: Media Library ──────────────────────────────────────── */}
+      <DCSection id="media" title="Group 7 — Media Library">
+        <DCArtboard id="s15" label="15 Media Library" width={390} height={844}>
+          <Phone><S15_MediaLibrary /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s16" label="16 Asset Detail" width={390} height={844}>
+          <Phone><S16_AssetDetail /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      {/* ── GROUP 8: Members ───────────────────────────────────────────── */}
+      <DCSection id="members" title="Group 8 — Members (Admin only)">
+        <DCArtboard id="s17" label="17 Member List" width={390} height={844}>
+          <Phone><S17_MemberList /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s18" label="18 Add Member" width={390} height={844}>
+          <Phone><S18_AddMember /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s19" label="19 Edit Member Role" width={390} height={844}>
+          <Phone><S19_EditMember /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      {/* ── GROUP 9: API Keys ───────────────────────────────────────────── */}
+      <DCSection id="apikeys" title="Group 9 — API Keys (Admin only)">
+        <DCArtboard id="s20" label="20 API Key List" width={390} height={844}>
+          <Phone><S20_APIKeyList /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s21" label="21 Create API Key + Reveal" width={390} height={844}>
+          <Phone><S21_CreateAPIKey /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      {/* ── GROUP 10: Notifications ─────────────────────────────────────── */}
+      <DCSection id="notifs" title="Group 10 — Notifications">
+        <DCArtboard id="s22" label="22 Notifications" width={390} height={844}>
+          <Phone><S22_Notifications /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      {/* ── GROUP 11: Profile & Settings ───────────────────────────────── */}
+      <DCSection id="profile" title="Group 11 — Profile & Settings">
+        <DCArtboard id="s23" label="23 Profile" width={390} height={844}>
+          <Phone><S23_Profile /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s24" label="24 Account Settings" width={390} height={844}>
+          <Phone><S24_AccountSettings /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s25" label="25 Security & 2FA" width={390} height={844}>
+          <Phone><S25_Security /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s26" label="26 2FA Setup" width={390} height={844}>
+          <Phone><S26_TwoFASetup /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      {/* ── GROUP 12: System Admin ──────────────────────────────────────── */}
+      <DCSection id="admin" title="Group 12 — System Admin Panel">
+        <DCArtboard id="s27" label="27 Admin Panel Home" width={390} height={844}>
+          <Phone><S27_AdminPanel /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s28" label="28 User Management" width={390} height={844}>
+          <Phone><S28_UserManagement /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s29" label="29 User Detail" width={390} height={844}>
+          <Phone><S29_UserDetail /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s31" label="31 Role Management" width={390} height={844}>
+          <Phone><S31_RoleManagement /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s32" label="32 Activity Logs" width={390} height={844}>
+          <Phone><S32_ActivityLogs /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+      {/* ── GROUP 13: Public Content ────────────────────────────────────── */}
+      <DCSection id="public" title="Group 13 — Public Content (no auth)">
+        <DCArtboard id="s33" label="33 Public Feed" width={390} height={844}>
+          <Phone><S33_PublicFeed /></Phone>
+        </DCArtboard>
+        <DCArtboard id="s34" label="34 Public Content Detail" width={390} height={844}>
+          <Phone><S34_PublicDetail /></Phone>
+        </DCArtboard>
+      </DCSection>
+
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
