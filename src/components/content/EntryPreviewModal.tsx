@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import Svg, { Path } from 'react-native-svg';
 import { StatusPill, STATUS_COLOR } from './StatusPill';
+import { Markdown } from './Markdown';
 import { TagDTO } from '../../types/content.types';
 import { styles } from '../../styles/app/entry-preview.styles';
 import { DS } from '../../constants/ds';
@@ -62,9 +63,10 @@ export function EntryPreviewModal({
             {dateLabel && <Text style={styles.metaText}>{dateLabel}</Text>}
           </View>
 
-          <Text style={[styles.body, !richContent && styles.bodyEmpty]}>
-            {richContent || 'No content yet.'}
-          </Text>
+          {richContent
+            ? <Markdown content={richContent} style={styles.body} />
+            : <Text style={[styles.body, styles.bodyEmpty]}>No content yet.</Text>
+          }
 
           {tags.length > 0 && (
             <View style={styles.tagsRow}>
