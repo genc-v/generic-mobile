@@ -59,9 +59,13 @@ export function useOrganisations() {
     router.push('/(app)/profile');
   }
 
+  function goToOrg(orgId: string) {
+    router.push(`/(app)/${orgId}`);
+  }
+
   return {
     orgs, totalCount, loading, loadingMore, error,
     showCreate, setShowCreate, hasMore,
-    handleRefresh, handleEndReached, handleOrgCreated, goToProfile,
+    handleRefresh, handleEndReached, handleOrgCreated, goToProfile, goToOrg,
   };
 }

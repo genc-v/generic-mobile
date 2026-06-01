@@ -70,6 +70,7 @@ export default function OrganisationsScreen() {
         renderItem={({ item, index }) => (
           <OrgRow
             org={item}
+            onPress={() => vm.goToOrg(item.id)}
             last={index === vm.orgs.length - 1 && !vm.hasMore.current}
           />
         )}

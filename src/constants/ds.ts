@@ -12,5 +12,8 @@ export const DS = {
   accentStrong: '#8B5CF6',
   accentDim: 'rgba(167,139,250,0.10)',
   accentBorder: 'rgba(167,139,250,0.28)',
+  green: '#22C55E',
+  amber: '#EAB308',
+  orange: '#F97316',
   red: '#EF4444',
 } as const;

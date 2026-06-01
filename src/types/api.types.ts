@@ -1,6 +1,7 @@
 export enum Microservice {
   AUTH = 'auth',
   PROFILE = 'profile',
+  CONTENT = 'content',
   ENTRY = 'entry',
   ORGANISATION = 'organisation',
   ASSET = 'asset',

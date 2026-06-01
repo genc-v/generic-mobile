@@ -28,14 +28,15 @@ function ChevronRight() {
   );
 }
 
-type Props = { org: Organisation; last: boolean };
+type Props = { org: Organisation; last: boolean; onPress: () => void };
 
-export function OrgRow({ org, last }: Props) {
+export function OrgRow({ org, last, onPress }: Props) {
   const initials = org.name.slice(0, 2).toUpperCase();
   return (
     <TouchableOpacity
       style={[styles.orgRow, !last && styles.orgRowBorder]}
       activeOpacity={0.6}
+      onPress={onPress}
     >
       <View style={styles.orgAvatar}>
         <Text style={styles.orgAvatarText}>{initials}</Text>

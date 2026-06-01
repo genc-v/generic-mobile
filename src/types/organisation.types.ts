@@ -17,3 +17,12 @@ export interface OrganisationPage {
 
 // POST /organisations — raw org object (no success/data wrapper)
 export type CreateOrganisationResponse = Organisation;
+
+export interface ApiKey {
+  id: string;
+  organisationId: string;
+  key: string;
+  createdAt: string;
+  expiresAt: string | null;
+  isActive: boolean;
+}

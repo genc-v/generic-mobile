@@ -10,6 +10,7 @@ const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://user.jonfjz.dev/api
 // (e.g. '/organisations') rather than being appended after the microservice name.
 const MICROSERVICE_BASE_URLS: Partial<Record<Microservice, string>> = {
   [Microservice.ORGANISATION]: process.env.EXPO_PUBLIC_ORG_API_URL ?? 'https://organisations.jonfjz.dev',
+  [Microservice.CONTENT]: process.env.EXPO_PUBLIC_CONTENT_API_URL ?? 'https://content.jonfjz.dev',
 };
 
 /**
@@ -66,5 +67,9 @@ export async function executeApiRequest<T = any>({
     throw new Error(`Request failed with status ${response.status}`);
   }
 
-  return response.json();
+  const contentLength = response.headers.get('content-length');
+  const contentType = response.headers.get('content-type') ?? '';
+  const hasBody = response.status !== 204 && contentLength !== '0' && contentType.includes('json');
+
+  return hasBody ? response.json() : (undefined as unknown as T);
 }
