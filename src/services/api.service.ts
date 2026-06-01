@@ -5,49 +5,38 @@ import { authService, SECURE_STORE_KEYS } from './auth.service';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://user.jonfjz.dev/api';
 
-// Microservices that live on separate domains use this map.
-// When a microservice has an override, `path` is the full resource path
-// (e.g. '/organisations') rather than being appended after the microservice name.
+// Services on their own domain override the base URL; for them `path` is the
+// full resource path rather than being appended after the microservice name.
 const MICROSERVICE_BASE_URLS: Partial<Record<Microservice, string>> = {
   [Microservice.ORGANISATION]: process.env.EXPO_PUBLIC_ORG_API_URL ?? 'https://organisations.jonfjz.dev',
   [Microservice.CONTENT]: process.env.EXPO_PUBLIC_CONTENT_API_URL ?? 'https://content.jonfjz.dev',
 };
 
-/**
- * Core network client. Handles URL construction, headers, and the actual fetch request.
- * Pure Javascript/TypeScript, decoupled from React.
- */
 export async function executeApiRequest<T = any>({
   microservice,
-  path = '', // Defaults to empty string
+  path = '',
   type,
   body,
-  needs2fa = true, // Defaulting to true as requested
+  needs2fa = true,
 }: ApiRequestOptions): Promise<T> {
-  
-  // 2FA Verification check
   if (needs2fa && !authState.is2faVerified) {
     throw new Error('2FA verification is required to proceed.');
   }
 
-  // Ensure JWT is fresh before making the request (except for auth routes to prevent loops)
+  // Skip the refresh for auth routes themselves to avoid a refresh loop.
   if (microservice !== Microservice.AUTH) {
     await authService.checkAndRefreshJwt();
   }
 
-  // Construct URL — services with their own domain use path as the full resource path
   const overrideBase = MICROSERVICE_BASE_URLS[microservice];
   const url = overrideBase ? `${overrideBase}${path}` : `${BASE_URL}/${microservice}${path}`;
-  
+
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    'accept': 'application/json', // Or 'text/plain' based on your API needs
+    'accept': 'application/json',
   };
 
-  // Fetch JWT token directly from secure storage (not memory)
   const jwtToken = await SecureStore.getItemAsync(SECURE_STORE_KEYS.JWT_TOKEN);
-  
-  // Attach JWT token if available
   if (jwtToken) {
     headers['Authorization'] = `Bearer ${jwtToken}`;
   }
@@ -64,12 +53,19 @@ export async function executeApiRequest<T = any>({
   const response = await fetch(url, options);
 
   if (!response.ok) {
-    throw new Error(`Request failed with status ${response.status}`);
+    const detail = await response.text().catch(() => '');
+    throw new Error(`Request failed with status ${response.status}${detail ? `: ${detail.slice(0, 200)}` : ''}`);
   }
 
-  const contentLength = response.headers.get('content-length');
-  const contentType = response.headers.get('content-type') ?? '';
-  const hasBody = response.status !== 204 && contentLength !== '0' && contentType.includes('json');
+  if (response.status === 204) return undefined as unknown as T;
 
-  return hasBody ? response.json() : (undefined as unknown as T);
+  // These services return JSON with a text/plain content-type, so parse the
+  // body directly rather than trusting the header. Empty body -> undefined.
+  const text = await response.text();
+  if (!text) return undefined as unknown as T;
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    return text as unknown as T;
+  }
 }

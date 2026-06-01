@@ -45,8 +45,8 @@ export function useContentList(orgId: string) {
         toDate: adv.toDate || undefined,
       });
       setEntries(data);
-    } catch {
-      setError('Failed to load entries.');
+    } catch (e: any) {
+      setError(e?.message ?? 'Failed to load entries.');
     } finally {
       setLoading(false);
     }

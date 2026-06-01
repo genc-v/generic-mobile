@@ -13,5 +13,4 @@ class AuthState {
   }
 }
 
-// Export a singleton instance to be used across the app
 export const authState = new AuthState();

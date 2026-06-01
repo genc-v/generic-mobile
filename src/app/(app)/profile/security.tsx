@@ -14,7 +14,6 @@ import { useSetup2fa } from '../../../viewmodels/useSetup2fa';
 import { useDisable2fa } from '../../../viewmodels/useDisable2fa';
 import { styles } from '../../../styles/app/profile/security.styles';
 
-// ── Setup bottom sheet ────────────────────────────────────────────────────────
 function SetupSheet({ visible, onClose, onEnabled }: {
   visible: boolean; onClose: () => void; onEnabled: () => void;
 }) {
@@ -64,7 +63,6 @@ function SetupSheet({ visible, onClose, onEnabled }: {
   );
 }
 
-// ── Disable bottom sheet ──────────────────────────────────────────────────────
 function DisableSheet({ visible, onClose, onDisabled }: {
   visible: boolean; onClose: () => void; onDisabled: () => void;
 }) {
@@ -94,7 +92,6 @@ function DisableSheet({ visible, onClose, onDisabled }: {
   );
 }
 
-// ── Screen ────────────────────────────────────────────────────────────────────
 export default function SecurityScreen() {
   const vm = useSecurity();
 

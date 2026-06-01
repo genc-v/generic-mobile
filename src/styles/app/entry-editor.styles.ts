@@ -32,8 +32,6 @@ export const styles = StyleSheet.create({
   previewLabel: { fontSize: 13, color: DS.text2, fontWeight: '500', letterSpacing: -0.1 },
 
   scroll: { paddingBottom: 120 },
-
-  // Hero image at the top
   hero: {
     width: '100%',
     height: 220,
@@ -60,7 +58,6 @@ export const styles = StyleSheet.create({
     gap: 10,
   },
   heroUploadingLabel: { fontSize: 13, color: DS.text1, fontWeight: '500' },
-  // Buttons overlaid inside the image (top-right)
   heroButtons: {
     position: 'absolute',
     top: 12,
@@ -84,7 +81,6 @@ export const styles = StyleSheet.create({
     backgroundColor: 'rgba(239,68,68,0.25)',
     borderColor: 'rgba(239,68,68,0.4)',
   },
-  // Centered upload CTA when there's no image yet
   heroCenterBtn: {
     flexDirection: 'row',
     alignItems: 'center',

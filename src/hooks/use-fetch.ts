@@ -12,7 +12,6 @@ export function useFetch() {
       setError(null);
 
       try {
-        // Delegate to the decoupled API service
         const data = await executeApiRequest<T>(options);
         return data;
       } catch (err: any) {

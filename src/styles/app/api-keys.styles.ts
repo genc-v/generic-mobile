@@ -95,6 +95,7 @@ export const styles = StyleSheet.create({
   emptyText: { fontSize: 15, color: DS.text2, fontWeight: '500' },
   emptyHint: { fontSize: 13, color: DS.text3 },
   errorText: { fontSize: 13, color: DS.red },
+  retryLabel: { fontSize: 13, color: DS.text2, textDecorationLine: 'underline', marginTop: 4 },
 
   fab: {
     position: 'absolute',

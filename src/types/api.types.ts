@@ -17,15 +17,11 @@ export enum RequestType {
 
 export interface ApiRequestOptions {
   microservice: Microservice;
-  path?: string; // To handle sub-routes like '/login'
+  path?: string;
   type: RequestType;
   body?: any;
   needs2fa?: boolean;
 }
-
-// -----------------------------------------------------------------------------
-// Auth DTOs
-// -----------------------------------------------------------------------------
 
 export interface AuthLoginResponse {
   success: boolean;

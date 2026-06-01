@@ -3,9 +3,8 @@ import { DS } from '../../constants/ds';
 
 type Props = { content: string; style?: TextStyle };
 
-// ── Inline parsing ────────────────────────────────────────────────────────────
-// Handles the markers the editor toolbar produces: `code`, **bold**, ~~strike~~,
-// _italic_, and [text](url). Scans for the earliest token and recurses.
+// Inline markers the editor toolbar produces: `code`, **bold**, ~~strike~~,
+// _italic_, [text](url). Scans for the earliest token and recurses on the rest.
 type Inline =
   | { t: 'text'; v: string }
   | { t: 'code'; v: string }
@@ -79,7 +78,6 @@ function InlineText({ text, baseStyle }: { text: string; baseStyle?: TextStyle }
   );
 }
 
-// ── Block parsing ─────────────────────────────────────────────────────────────
 export function Markdown({ content, style }: Props) {
   const lines = content.split('\n');
 

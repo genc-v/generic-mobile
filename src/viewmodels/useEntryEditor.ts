@@ -81,7 +81,6 @@ export function useEntryEditor(orgId: string, entryId: string) {
     }
   }
 
-  // ── Rich-text formatting (markdown markers) ──────────────────────────────────
   // Wrap the current selection with prefix/suffix, or insert markers at the cursor.
   function wrapSelection(prefix: string, suffix = prefix) {
     const { start, end } = selection;
@@ -112,6 +111,16 @@ export function useEntryEditor(orgId: string, entryId: string) {
     setRichContent(next);
     const pos = start + (cursorOffset ?? snippet.length);
     setSelection({ start: pos, end: pos });
+  }
+
+  async function searchCategories(q: string) {
+    const cats = await contentService.listCategories(orgId, q || undefined);
+    return cats.map(c => ({ id: c.categoryId, name: c.name ?? '' }));
+  }
+
+  async function searchTags(q: string) {
+    const found = await contentService.listTags(orgId, q || undefined);
+    return found.map(t => ({ id: t.tagId, name: t.name ?? '' }));
   }
 
   function selectCategory(id: string, name: string) {
@@ -216,6 +225,7 @@ export function useEntryEditor(orgId: string, entryId: string) {
     missingForPublish,
     showCategoryPicker, setShowCategoryPicker,
     showTagPicker, setShowTagPicker,
+    searchCategories, searchTags,
     selectCategory, clearCategory,
     toggleTag, removeTag,
     handlePickAsset, clearAsset,

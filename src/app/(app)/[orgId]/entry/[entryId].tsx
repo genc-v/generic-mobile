@@ -7,15 +7,13 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar';
 import Svg, { Path } from 'react-native-svg';
 import { StatusPill, STATUS_COLOR } from '../../../../components/content/StatusPill';
-import { PickerSheet, PickerItem } from '../../../../components/content/PickerSheet';
+import { PickerSheet } from '../../../../components/content/PickerSheet';
 import { EntryPreviewModal } from '../../../../components/content/EntryPreviewModal';
 import { PrimaryBtn, GhostBtn } from '../../../../components/ui/button';
 import { useEntryEditor } from '../../../../viewmodels/useEntryEditor';
-import { contentService } from '../../../../services/content.service';
 import { styles } from '../../../../styles/app/entry-editor.styles';
 import { DS } from '../../../../constants/ds';
 
-// Formatting toolbar buttons — label + action against the rich-text helpers.
 type ToolAction =
   | { kind: 'wrap'; prefix: string; suffix?: string }
   | { kind: 'line'; marker: string }
@@ -46,16 +44,6 @@ export default function EntryEditor() {
 
   const status = vm.entry?.status ?? 'New';
   const statusColor = STATUS_COLOR[status] ?? DS.text3;
-
-  async function searchCategories(q: string): Promise<PickerItem[]> {
-    const cats = await contentService.listCategories(orgId, q || undefined);
-    return cats.map(c => ({ id: c.categoryId, name: c.name ?? '' }));
-  }
-
-  async function searchTags(q: string): Promise<PickerItem[]> {
-    const tags = await contentService.listTags(orgId, q || undefined);
-    return tags.map(t => ({ id: t.tagId, name: t.name ?? '' }));
-  }
 
   function runTool(action: ToolAction) {
     if (action.kind === 'wrap') vm.wrapSelection(action.prefix, action.suffix);
@@ -104,7 +92,6 @@ export default function EntryEditor() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Hero image — big, on top, with controls overlaid inside it */}
           <View style={styles.hero}>
             {vm.assetUrl ? (
               <Image source={{ uri: vm.assetUrl }} style={styles.heroImage} resizeMode="cover" />
@@ -149,8 +136,6 @@ export default function EntryEditor() {
             />
             <View style={styles.divider} />
           </View>
-
-          {/* Rich-text toolbar */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -191,8 +176,6 @@ export default function EntryEditor() {
             multiline
             textAlignVertical="top"
           />
-
-          {/* Properties */}
           <View style={styles.properties}>
             <Text style={styles.sectionLabel}>Properties</Text>
 
@@ -239,8 +222,6 @@ export default function EntryEditor() {
               </Text>
             </View>
           </View>
-
-          {/* Tags */}
           <View style={styles.tagsSection}>
             <Text style={styles.sectionLabel}>Tags</Text>
             <View style={styles.tagsRow}>
@@ -259,8 +240,6 @@ export default function EntryEditor() {
               </TouchableOpacity>
             </View>
           </View>
-
-          {/* Danger zone */}
           <View style={styles.dangerSection}>
             {vm.isPublished && (
               <TouchableOpacity
@@ -344,7 +323,7 @@ export default function EntryEditor() {
         placeholder="Search categories…"
         multi={false}
         selectedIds={vm.categoryId ? [vm.categoryId] : []}
-        onSearch={searchCategories}
+        onSearch={vm.searchCategories}
         onSelect={item => vm.selectCategory(item.id, item.name)}
         onClose={() => vm.setShowCategoryPicker(false)}
       />
@@ -355,7 +334,7 @@ export default function EntryEditor() {
         placeholder="Search tags…"
         multi
         selectedIds={vm.tags.map(t => t.tagId)}
-        onSearch={searchTags}
+        onSearch={vm.searchTags}
         onSelect={item => vm.toggleTag({ tagId: item.id, name: item.name })}
         onClose={() => vm.setShowTagPicker(false)}
       />

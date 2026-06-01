@@ -1,39 +1,33 @@
 import { StyleSheet } from 'react-native';
 import { DS } from '../../constants/ds';
 
+// Styles for the in-dashboard "Settings" tab (rename org / delete org).
 export const styles = StyleSheet.create({
-  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  sheet: {
-    backgroundColor: DS.bg,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+  safe: { flex: 1, backgroundColor: DS.bg },
+  scroll: {
+    padding: 16,
+    paddingBottom: 40,
+  },
+  sectionLabel: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: DS.text3,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: 10,
+  },
+  card: {
+    backgroundColor: DS.surface2,
     borderWidth: 1,
-    borderBottomWidth: 0,
-    borderColor: DS.border2,
-    padding: 24,
-    paddingTop: 12,
+    borderColor: DS.border,
+    borderRadius: 10,
+    padding: 16,
   },
-  handle: {
-    width: 36,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: DS.border2,
-    alignSelf: 'center',
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: DS.text1,
-    letterSpacing: -0.4,
-    marginBottom: 20,
-  },
-
   label: {
     fontSize: 13,
     fontWeight: '500',
     color: DS.text1,
-    marginBottom: 6,
+    marginBottom: 8,
     letterSpacing: -0.1,
   },
   input: {
@@ -41,27 +35,28 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: DS.border2,
-    backgroundColor: DS.surface2,
+    backgroundColor: DS.bg,
     paddingHorizontal: 12,
     fontSize: 14,
     color: DS.text1,
     letterSpacing: -0.1,
     marginBottom: 16,
   },
-
-  error: {
+  errorText: {
     fontSize: 13,
     color: DS.red,
     fontWeight: '500',
     marginBottom: 12,
   },
-
-  divider: {
-    height: 1,
-    backgroundColor: DS.border,
-    marginVertical: 20,
+  confirmText: {
+    fontSize: 13,
+    color: DS.text2,
+    lineHeight: 19,
+    marginBottom: 14,
   },
-
+  confirmActions: {
+    flexDirection: 'row',
+  },
   deleteBtn: {
     height: 44,
     borderRadius: 8,
@@ -76,24 +71,50 @@ export const styles = StyleSheet.create({
     fontWeight: '500',
     color: DS.red,
   },
-  confirmRow: {
-    gap: 8,
-  },
-  confirmText: {
-    fontSize: 12,
-    color: DS.text3,
-    textAlign: 'center',
+
+  navRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: DS.surface2,
+    borderWidth: 1,
+    borderColor: DS.border,
+    borderRadius: 10,
+    padding: 16,
     marginBottom: 8,
   },
-  confirmActions: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-
-  gearBtn: {
-    width: 28,
-    height: 28,
+  navIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 8,
+    backgroundColor: DS.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  navLabel: { fontSize: 14, fontWeight: '500', color: DS.text1 },
+  navSub: { fontSize: 12, color: DS.text3, marginTop: 2 },
+  chevron: { width: 7, height: 12 },
+  readOnly: { fontSize: 13, color: DS.text3, fontStyle: 'italic' },
+
+  subHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: DS.border,
+  },
+  subBack: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  subBackLabel: { fontSize: 14, fontWeight: '500', color: DS.text1, letterSpacing: -0.2 },
+
+  placeholder: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 60,
+  },
+  placeholderTitle: { fontSize: 15, color: DS.text2, fontWeight: '500' },
+  placeholderHint: { fontSize: 13, color: DS.text3 },
 });

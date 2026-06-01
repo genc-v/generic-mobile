@@ -56,8 +56,6 @@ export const styles = StyleSheet.create({
   dateClear: { padding: 2 },
 
   actions: { flexDirection: 'row', gap: 10, marginTop: 4 },
-
-  // Funnel button next to the search bar
   filterBtnRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',

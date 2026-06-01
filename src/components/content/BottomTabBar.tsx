@@ -3,15 +3,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path, Rect, Circle } from 'react-native-svg';
 import { DS } from '../../constants/ds';
 
-export type ContentTab = 'Content' | 'Categories' | 'Tags' | 'Media' | 'Members' | 'Keys' | 'Settings';
+export type ContentTab = 'Content' | 'Categories' | 'Tags' | 'Media' | 'Settings';
 
-const BASE_TABS: ContentTab[] = ['Content', 'Categories', 'Tags', 'Media'];
-const ADMIN_TABS: ContentTab[] = ['Content', 'Categories', 'Tags', 'Media', 'Members', 'Keys', 'Settings'];
+const TABS: ContentTab[] = ['Content', 'Categories', 'Tags', 'Media', 'Settings'];
 
 type Props = {
   active: ContentTab;
   onPress: (tab: ContentTab) => void;
-  adminView?: boolean;
 };
 
 function TabIcon({ name, color }: { name: ContentTab; color: string }) {
@@ -25,10 +23,6 @@ function TabIcon({ name, color }: { name: ContentTab; color: string }) {
       return <Svg {...p}><Path d="M9 2.5H3.5a1 1 0 0 0-1 1V9a1 1 0 0 0 .3.7l6 6a1 1 0 0 0 1.4 0l5.5-5.5a1 1 0 0 0 0-1.4l-6-6A1 1 0 0 0 9 2.5Z" stroke={color} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" /><Circle cx={6} cy={6} r={0.8} fill={color} /></Svg>;
     case 'Media':
       return <Svg {...p}><Rect x={2} y={3.5} width={14} height={11} rx={1.4} stroke={color} strokeWidth={1.4} strokeLinejoin="round" /><Circle cx={6.5} cy={7.5} r={1.3} stroke={color} strokeWidth={1.4} /><Path d="M2.5 13l3.5-3 3 2.5 2.5-2 4 3.5" stroke={color} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" /></Svg>;
-    case 'Members':
-      return <Svg {...p}><Circle cx={7} cy={6} r={2.5} stroke={color} strokeWidth={1.4} /><Path d="M2.5 14a4.5 4.5 0 0 1 9 0" stroke={color} strokeWidth={1.4} strokeLinecap="round" /><Circle cx={13} cy={6.5} r={1.8} stroke={color} strokeWidth={1.4} /><Path d="M11 14a3.5 3.5 0 0 1 5 0" stroke={color} strokeWidth={1.4} strokeLinecap="round" /></Svg>;
-    case 'Keys':
-      return <Svg {...p}><Circle cx={6} cy={9} r={3} stroke={color} strokeWidth={1.4} /><Path d="M9 9h7M13.5 9v2.5M16 9v2.5" stroke={color} strokeWidth={1.4} strokeLinecap="round" /></Svg>;
     case 'Settings':
       return <Svg {...p}><Circle cx={9} cy={9} r={2.5} stroke={color} strokeWidth={1.4} /><Path d="M9 2v1.5M9 14.5V16M2 9h1.5M14.5 9H16M4.1 4.1l1.05 1.05M12.85 12.85l1.05 1.05M13.9 4.1l-1.05 1.05M5.15 12.85l-1.05 1.05" stroke={color} strokeWidth={1.4} strokeLinecap="round" /></Svg>;
     default:
@@ -36,13 +30,12 @@ function TabIcon({ name, color }: { name: ContentTab; color: string }) {
   }
 }
 
-export function BottomTabBar({ active, onPress, adminView = false }: Props) {
+export function BottomTabBar({ active, onPress }: Props) {
   const insets = useSafeAreaInsets();
-  const tabs = adminView ? ADMIN_TABS : BASE_TABS;
 
   return (
     <View style={[styles.bar, { paddingBottom: insets.bottom + 8 }]}>
-      {tabs.map(tab => {
+      {TABS.map(tab => {
         const isActive = tab === active;
         const color = isActive ? DS.text1 : DS.text4;
         return (
