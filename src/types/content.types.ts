@@ -3,9 +3,40 @@ export interface TagDTO {
   name: string | null;
 }
 
+export interface TagDetail {
+  tagId: string;
+  name: string;
+  organisationId: string;
+  userId: string;
+}
+
+export interface UpdateTagDTO {
+  tagId: string;
+  name: string;
+}
+
 export interface CategoryResponseDTO {
   categoryId: string;
   name: string | null;
+}
+
+export interface CategoryDetail {
+  categoryId: string;
+  name: string;
+  description: string | null;
+  organisationId: string;
+  userId: string;
+}
+
+export interface CreateCategoryDTO {
+  name: string;
+  description?: string;
+}
+
+export interface UpdateCategoryDTO {
+  categoryId: string;
+  name: string;
+  description?: string;
 }
 
 export interface ContentDTO {

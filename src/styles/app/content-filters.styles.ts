@@ -1,0 +1,95 @@
+import { StyleSheet } from 'react-native';
+import { DS } from '../../constants/ds';
+
+export const styles = StyleSheet.create({
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+  sheet: {
+    backgroundColor: DS.bg,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    borderWidth: 1,
+    borderBottomWidth: 0,
+    borderColor: DS.border2,
+    padding: 24,
+    paddingTop: 12,
+  },
+  handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: DS.border2, alignSelf: 'center', marginBottom: 20 },
+  title: { fontSize: 17, fontWeight: '700', color: DS.text1, letterSpacing: -0.4, marginBottom: 20 },
+
+  fieldLabel: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: DS.text3,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: 8,
+  },
+  input: {
+    height: 40,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: DS.border2,
+    backgroundColor: DS.surface2,
+    paddingHorizontal: 12,
+    fontSize: 14,
+    color: DS.text1,
+    letterSpacing: -0.1,
+    marginBottom: 16,
+  },
+
+  dateRow: { flexDirection: 'row', gap: 10, marginBottom: 16 },
+  dateCol: { flex: 1 },
+  dateField: {
+    height: 40,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: DS.border2,
+    backgroundColor: DS.surface2,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  dateFieldText: { fontSize: 14, color: DS.text1, letterSpacing: -0.1 },
+  dateFieldPlaceholder: { fontSize: 14, color: DS.text4, letterSpacing: -0.1 },
+  dateClear: { padding: 2 },
+
+  actions: { flexDirection: 'row', gap: 10, marginTop: 4 },
+
+  // Funnel button next to the search bar
+  filterBtnRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  filterBtn: {
+    width: 36,
+    height: 36,
+    marginRight: 16,
+    marginTop: 10,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: DS.border,
+    backgroundColor: DS.surface2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  filterBtnActive: {
+    borderColor: DS.accentBorder,
+    backgroundColor: DS.accentDim,
+  },
+  badge: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    paddingHorizontal: 4,
+    backgroundColor: DS.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeText: { fontSize: 10, fontWeight: '700', color: '#0A0A0A' },
+});

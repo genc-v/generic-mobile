@@ -22,14 +22,79 @@ export const styles = StyleSheet.create({
     width: 24,
     height: 24,
     justifyContent: 'center',
+    alignItems: 'flex-start',
   },
-  backL1: { position: 'absolute', width: 1.4, height: 7, backgroundColor: DS.text2, borderRadius: 1, left: 8, top: 3, transform: [{ rotate: '-45deg' }] },
-  backL2: { position: 'absolute', width: 1.4, height: 7, backgroundColor: DS.text2, borderRadius: 1, left: 8, bottom: 3, transform: [{ rotate: '45deg' }] },
   headerMeta: { gap: 2 },
   headerTitle: { fontSize: 14, fontWeight: '600', color: DS.text1, letterSpacing: -0.3 },
   headerId: { fontSize: 10, color: DS.text4 },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  previewBtn: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  previewLabel: { fontSize: 13, color: DS.text2, fontWeight: '500', letterSpacing: -0.1 },
 
   scroll: { paddingBottom: 120 },
+
+  // Hero image at the top
+  hero: {
+    width: '100%',
+    height: 220,
+    backgroundColor: DS.surface2,
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  heroImage: {
+    width: '100%',
+    height: '100%',
+  },
+  heroEmpty: {
+    alignItems: 'center',
+    gap: 10,
+  },
+  heroEmptyLabel: { fontSize: 13, color: DS.text3, fontWeight: '500' },
+  heroUploading: {
+    position: 'absolute',
+    inset: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(9,9,11,0.5)',
+    gap: 10,
+  },
+  heroUploadingLabel: { fontSize: 13, color: DS.text1, fontWeight: '500' },
+  // Buttons overlaid inside the image (top-right)
+  heroButtons: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    flexDirection: 'row',
+    gap: 8,
+  },
+  heroBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    height: 32,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    backgroundColor: 'rgba(9,9,11,0.65)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.15)',
+  },
+  heroBtnText: { fontSize: 12, fontWeight: '500', color: '#FAFAFA' },
+  heroBtnDanger: {
+    backgroundColor: 'rgba(239,68,68,0.25)',
+    borderColor: 'rgba(239,68,68,0.4)',
+  },
+  // Centered upload CTA when there's no image yet
+  heroCenterBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    height: 38,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: DS.text1,
+  },
+  heroCenterBtnText: { fontSize: 13, fontWeight: '500', color: '#0A0A0A' },
 
   titleSection: { padding: 20, paddingBottom: 0 },
   titleInput: {
@@ -45,19 +110,30 @@ export const styles = StyleSheet.create({
   toolbar: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
+    gap: 6,
     paddingHorizontal: 20,
-    paddingBottom: 10,
+    paddingBottom: 12,
   },
-  toolbarBtn: {
+  toolBtn: {
+    minWidth: 32,
+    height: 32,
+    paddingHorizontal: 9,
+    borderRadius: 6,
+    backgroundColor: DS.surface2,
+    borderWidth: 1,
+    borderColor: DS.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  toolBtnText: {
     fontSize: 14,
-    color: DS.text3,
-    fontWeight: '400',
+    color: DS.text1,
   },
   toolbarSep: {
     width: 1,
-    height: 16,
+    height: 18,
     backgroundColor: DS.border,
+    marginHorizontal: 2,
   },
 
   contentInput: {
@@ -95,6 +171,21 @@ export const styles = StyleSheet.create({
   propLabel: { fontSize: 13, color: DS.text3, letterSpacing: -0.1 },
   propValue: { fontSize: 13, color: DS.text1, letterSpacing: -0.1 },
 
+  propValueBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  propValueText: { fontSize: 13, color: DS.text1, letterSpacing: -0.1 },
+  propPlaceholder: { fontSize: 13, color: DS.text3, letterSpacing: -0.1 },
+  propClear: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
   tagsSection: {
     marginHorizontal: 20,
     marginTop: 16,
@@ -117,6 +208,46 @@ export const styles = StyleSheet.create({
     borderColor: DS.border2,
   },
   tagLabel: { fontSize: 12, color: DS.text1, letterSpacing: -0.1 },
+  tagRemove: { padding: 2 },
+  addTagChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 4,
+    paddingHorizontal: 9,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: DS.border2,
+  },
+  addTagLabel: { fontSize: 12, color: DS.text3, letterSpacing: -0.1 },
+
+  dangerSection: {
+    marginHorizontal: 20,
+    marginTop: 28,
+    gap: 10,
+  },
+  unpublishBtn: {
+    height: 44,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: DS.border2,
+    backgroundColor: DS.surface2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  unpublishLabel: { fontSize: 14, fontWeight: '500', color: DS.text1 },
+  deleteBtn: {
+    height: 44,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(239,68,68,0.3)',
+    backgroundColor: 'rgba(239,68,68,0.07)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  deleteLabel: { fontSize: 14, fontWeight: '500', color: DS.red },
+  confirmText: { fontSize: 13, color: DS.text2, lineHeight: 19, marginBottom: 4 },
+  confirmRow: { flexDirection: 'row', gap: 10 },
 
   feedback: {
     paddingHorizontal: 20,
@@ -130,11 +261,20 @@ export const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    flexDirection: 'row',
-    gap: 8,
     backgroundColor: 'rgba(9,9,11,0.92)',
     borderTopWidth: 1,
     borderTopColor: DS.border,
     padding: 12,
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  publishHint: {
+    fontSize: 11,
+    color: DS.text3,
+    textAlign: 'center',
+    marginBottom: 8,
+    letterSpacing: -0.1,
   },
 });

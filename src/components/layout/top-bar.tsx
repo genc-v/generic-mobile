@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { ReactNode } from 'react';
 import { useRouter } from 'expo-router';
+import Svg, { Path } from 'react-native-svg';
 import { DS } from '../../constants/ds';
 
 type Props = { title: string; right?: ReactNode };
@@ -10,8 +11,9 @@ export function TopBar({ title, right }: Props) {
   return (
     <View style={styles.row}>
       <TouchableOpacity style={styles.back} onPress={() => router.back()} hitSlop={12}>
-        <View style={styles.chevL1} />
-        <View style={styles.chevL2} />
+        <Svg width={10} height={16} viewBox="0 0 9 14" fill="none">
+          <Path d="M7.5 1L1.5 7L7.5 13" stroke={DS.text2} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+        </Svg>
       </TouchableOpacity>
       <Text style={styles.title}>{title}</Text>
       <View style={styles.spacer}>{right ?? null}</View>
@@ -32,26 +34,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     justifyContent: 'center',
-  },
-  chevL1: {
-    position: 'absolute',
-    width: 1.4,
-    height: 7,
-    backgroundColor: DS.text2,
-    borderRadius: 1,
-    left: 8,
-    top: 4,
-    transform: [{ rotate: '-45deg' }],
-  },
-  chevL2: {
-    position: 'absolute',
-    width: 1.4,
-    height: 7,
-    backgroundColor: DS.text2,
-    borderRadius: 1,
-    left: 8,
-    bottom: 4,
-    transform: [{ rotate: '45deg' }],
+    alignItems: 'flex-start',
   },
   title: {
     flex: 1,
@@ -61,5 +44,5 @@ const styles = StyleSheet.create({
     color: DS.text1,
     letterSpacing: -0.3,
   },
-  spacer: { width: 28 },
+  spacer: { minWidth: 28, alignItems: 'flex-end' },
 });

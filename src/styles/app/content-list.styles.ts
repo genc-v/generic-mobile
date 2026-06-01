@@ -4,8 +4,14 @@ import { DS } from '../../constants/ds';
 export const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: DS.bg },
 
+  // A horizontal ScrollView grows to fill remaining vertical space unless
+  // constrained — flexGrow:0 keeps the filter row at its natural chip height.
+  filterScroll: {
+    flexGrow: 0,
+  },
   filterRow: {
     flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
     paddingHorizontal: 16,
     paddingTop: 10,
