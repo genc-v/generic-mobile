@@ -41,6 +41,13 @@ jobs:
             generic-cms-builder \
             bash -lc '
               set -e
+              # The workspace is a persistent bind mount on the self-hosted
+              # runner, so node_modules and the generated android/ dir survive
+              # between runs. Gradle writes build artifacts inside
+              # node_modules (e.g. react-native-worklets/android/build), which
+              # npm ci cannot clean up (rmdir fails with ENOTEMPTY). Wipe both
+              # with rm -rf first so every build starts from a clean tree.
+              rm -rf node_modules android
               npm ci
               npx expo prebuild --platform android --no-install
               cd android
