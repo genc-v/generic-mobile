@@ -28,13 +28,29 @@ export interface ApiRequestOptions {
 export interface AuthLoginResponse {
   success: boolean;
   data?: {
+    jwtToken: string | null;
+    refreshToken: string | null;
+    twoFactorId: string | null;
+  };
+}
+
+export interface Auth2faLoginResponse {
+  success: boolean;
+  data?: {
     jwtToken: string;
     refreshToken: string;
-    twoFactorId: string | null;
   };
 }
 
 export interface AuthRefreshResponse {
   success: boolean;
   data: string; // new JWT token
+}
+
+export interface AuthRegisterResponse {
+  success: boolean;
+  data?: {
+    jwtToken: string;
+    refreshToken: string;
+  };
 }

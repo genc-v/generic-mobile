@@ -1,0 +1,14 @@
+export const DS = {
+  bg: '#09090B',
+  surface2: '#18181B',
+  surface3: '#27272A',
+  border: '#27272A',
+  border2: '#3F3F46',
+  text1: '#FAFAFA',
+  text2: '#A1A1AA',
+  text3: '#71717A',
+  text4: '#52525B',
+  accent: '#A78BFA',
+  accentStrong: '#8B5CF6',
+  red: '#EF4444',
+} as const;

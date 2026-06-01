@@ -1,7 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import { jwtDecode } from 'jwt-decode';
 import { authState } from '../utils/auth-state';
-import { AuthLoginResponse, AuthRefreshResponse } from '../types/api.types';
+import { AuthLoginResponse, AuthRefreshResponse, AuthRegisterResponse, Auth2faLoginResponse } from '../types/api.types';
 
 export const SECURE_STORE_KEYS = {
   REFRESH_TOKEN: 'generic_cms_refresh_token',
@@ -61,6 +61,56 @@ class AuthService {
       ]);
 
       authState.set2faVerified(twoFactorId === null);
+    }
+
+    return result;
+  }
+
+  async verify2fa(loginId: string, code: string): Promise<Auth2faLoginResponse> {
+    const response = await fetch(`${AUTH_API_URL}/2fa/login`, {
+      method: 'POST',
+      headers: AUTH_HEADERS,
+      body: JSON.stringify({ loginId, code }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`2FA verification failed with status ${response.status}`);
+    }
+
+    const result: Auth2faLoginResponse = await response.json();
+
+    if (result.success && result.data) {
+      const { jwtToken, refreshToken } = result.data;
+      await Promise.all([
+        SecureStore.setItemAsync(SECURE_STORE_KEYS.JWT_TOKEN, jwtToken),
+        SecureStore.setItemAsync(SECURE_STORE_KEYS.REFRESH_TOKEN, refreshToken),
+      ]);
+      authState.set2faVerified(true);
+    }
+
+    return result;
+  }
+
+  async register(email: string, username: string, password: string): Promise<AuthRegisterResponse> {
+    const response = await fetch(`${AUTH_API_URL}/register`, {
+      method: 'POST',
+      headers: AUTH_HEADERS,
+      body: JSON.stringify({ email, username, password }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Registration failed with status ${response.status}`);
+    }
+
+    const result: AuthRegisterResponse = await response.json();
+
+    if (result.success && result.data) {
+      const { jwtToken, refreshToken } = result.data;
+      await Promise.all([
+        refreshToken ? SecureStore.setItemAsync(SECURE_STORE_KEYS.REFRESH_TOKEN, refreshToken) : Promise.resolve(),
+        jwtToken ? SecureStore.setItemAsync(SECURE_STORE_KEYS.JWT_TOKEN, jwtToken) : Promise.resolve(),
+      ]);
+      authState.set2faVerified(true);
     }
 
     return result;
