@@ -10,5 +10,7 @@ export const DS = {
   text4: '#52525B',
   accent: '#A78BFA',
   accentStrong: '#8B5CF6',
+  accentDim: 'rgba(167,139,250,0.10)',
+  accentBorder: 'rgba(167,139,250,0.28)',
   red: '#EF4444',
 } as const;

@@ -3,8 +3,14 @@ import { Microservice, RequestType, ApiRequestOptions } from '../types/api.types
 import { authState } from '../utils/auth-state';
 import { authService, SECURE_STORE_KEYS } from './auth.service';
 
-// Use environment variable for the base URL, falling back to a default if not set
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://user.jonfjz.dev/api';
+
+// Microservices that live on separate domains use this map.
+// When a microservice has an override, `path` is the full resource path
+// (e.g. '/organisations') rather than being appended after the microservice name.
+const MICROSERVICE_BASE_URLS: Partial<Record<Microservice, string>> = {
+  [Microservice.ORGANISATION]: process.env.EXPO_PUBLIC_ORG_API_URL ?? 'https://organisations.jonfjz.dev',
+};
 
 /**
  * Core network client. Handles URL construction, headers, and the actual fetch request.
@@ -28,8 +34,9 @@ export async function executeApiRequest<T = any>({
     await authService.checkAndRefreshJwt();
   }
 
-  // Construct URL with optional path (e.g. /auth + /login)
-  const url = `${BASE_URL}/${microservice}${path}`;
+  // Construct URL — services with their own domain use path as the full resource path
+  const overrideBase = MICROSERVICE_BASE_URLS[microservice];
+  const url = overrideBase ? `${overrideBase}${path}` : `${BASE_URL}/${microservice}${path}`;
   
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',

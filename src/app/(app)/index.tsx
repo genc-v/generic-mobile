@@ -1,60 +1,107 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import { Brand } from '../../components/ui/brand';
+import { OrgRow } from '../../components/organisations/OrgRow';
+import { CreateOrgSheet } from '../../components/organisations/CreateOrgSheet';
+import { useOrganisations } from '../../viewmodels/useOrganisations';
+import { styles } from '../../styles/app/organisations.styles';
 import { DS } from '../../constants/ds';
-import { authService } from '../../services/auth.service';
 
-export default function HomeScreen() {
-  const router = useRouter();
-
-  async function handleLogout() {
-    await authService.logout();
-    router.replace('/(auth)');
-  }
+export default function OrganisationsScreen() {
+  const vm = useOrganisations();
+  const insets = useSafeAreaInsets();
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
       <StatusBar style="light" />
-      <View style={styles.container}>
-        <Text style={styles.text}>hello</Text>
-        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-          <Text style={styles.logoutLabel}>Log out</Text>
+
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <Brand size={26} />
+          <Text style={styles.headerTitle}>Generic</Text>
+        </View>
+        <TouchableOpacity style={styles.avatar} onPress={vm.goToProfile}>
+          <Text style={styles.avatarText}>ME</Text>
         </TouchableOpacity>
       </View>
+
+      <View style={styles.titleSection}>
+        <Text style={styles.pageTitle}>Organisations</Text>
+        {!vm.loading && (
+          <Text style={styles.pageSubtitle}>
+            {vm.totalCount} {vm.totalCount === 1 ? 'org' : 'orgs'}
+          </Text>
+        )}
+      </View>
+
+      <FlatList
+        data={vm.orgs}
+        keyExtractor={item => item.id}
+        contentContainerStyle={[styles.scroll, vm.orgs.length === 0 && styles.scrollEmpty]}
+        showsVerticalScrollIndicator={false}
+        onEndReached={vm.handleEndReached}
+        onEndReachedThreshold={0.3}
+        onRefresh={vm.handleRefresh}
+        refreshing={vm.loading}
+        ListHeaderComponent={vm.orgs.length > 0 ? <View style={styles.listCard} /> : null}
+        ListEmptyComponent={
+          vm.loading ? null : vm.error ? (
+            <View style={styles.centred}>
+              <Text style={styles.errorText}>{vm.error}</Text>
+              <TouchableOpacity style={styles.retryBtn} onPress={vm.handleRefresh}>
+                <Text style={styles.retryLabel}>Retry</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.centred}>
+              <Text style={styles.emptyText}>No organisations yet.</Text>
+              <Text style={styles.emptyHint}>Tap + New org to create one.</Text>
+            </View>
+          )
+        }
+        ListFooterComponent={
+          vm.loadingMore ? (
+            <View style={styles.loadingMore}>
+              <ActivityIndicator color={DS.accent} size="small" />
+            </View>
+          ) : null
+        }
+        renderItem={({ item, index }) => (
+          <OrgRow
+            org={item}
+            last={index === vm.orgs.length - 1 && !vm.hasMore.current}
+          />
+        )}
+        CellRendererComponent={({ children, index, style, ...rest }) => (
+          <View
+            {...rest}
+            style={[
+              style,
+              index === 0 && styles.cardFirst,
+              index === vm.orgs.length - 1 && styles.cardLast,
+              styles.cardCell,
+            ]}
+          >
+            {children}
+          </View>
+        )}
+      />
+
+      <TouchableOpacity
+        style={[styles.fab, { bottom: insets.bottom + 24 }]}
+        onPress={() => vm.setShowCreate(true)}
+        activeOpacity={0.85}
+      >
+        <Text style={styles.fabPlus}>+</Text>
+        <Text style={styles.fabLabel}>New org</Text>
+      </TouchableOpacity>
+
+      <CreateOrgSheet
+        visible={vm.showCreate}
+        onClose={() => vm.setShowCreate(false)}
+        onCreated={vm.handleOrgCreated}
+      />
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: DS.bg,
-  },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 24,
-  },
-  text: {
-    fontSize: 24,
-    color: DS.text1,
-  },
-  logoutBtn: {
-    height: 36,
-    paddingHorizontal: 16,
-    borderRadius: 6,
-    backgroundColor: DS.surface2,
-    borderWidth: 1,
-    borderColor: DS.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoutLabel: {
-    color: DS.text2,
-    fontSize: 14,
-    fontWeight: '500',
-    letterSpacing: -0.1,
-  },
-});
