@@ -213,6 +213,29 @@ class AuthService {
     };
   }
 
+  // Roles carried in the JWT. .NET emits the role claim under either "role"
+  // or the long ClaimTypes.Role URI, as a string or array.
+  async getJwtRoles(): Promise<string[]> {
+    const jwtToken = await SecureStore.getItemAsync(SECURE_STORE_KEYS.JWT_TOKEN);
+    if (!jwtToken) return [];
+    try {
+      const decoded = jwtDecode<Record<string, unknown>>(jwtToken);
+      const claim =
+        decoded["role"] ??
+        decoded["roles"] ??
+        decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+      if (!claim) return [];
+      return Array.isArray(claim) ? (claim as string[]) : [String(claim)];
+    } catch {
+      return [];
+    }
+  }
+
+  async isAdmin(): Promise<boolean> {
+    const roles = await this.getJwtRoles();
+    return roles.some((r) => r.toLowerCase() === "admin");
+  }
+
   async getAccount(): Promise<AccountResponse> {
     const response = await fetch(`${AUTH_API_URL}/account`, {
       method: 'GET',

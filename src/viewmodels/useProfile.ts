@@ -10,6 +10,7 @@ export function useProfile() {
   const cached = cache.getSync<Profile>(CACHE_KEYS.profile) ?? null;
   const [profile, setProfile] = useState<Profile | null>(cached);
   const [loading, setLoading] = useState(!cached);
+  const [isAdmin, setIsAdmin] = useState(cache.getSync<boolean>(CACHE_KEYS.isAdmin) ?? false);
 
   useEffect(() => {
     let active = true;
@@ -21,6 +22,10 @@ export function useProfile() {
       });
     }
 
+    cache.get<boolean>(CACHE_KEYS.isAdmin).then(v => {
+      if (active && v != null) setIsAdmin(v);
+    });
+
     profileService.get()
       .then(p => {
         if (!active) return;
@@ -29,6 +34,15 @@ export function useProfile() {
       })
       .catch(() => {})
       .finally(() => { if (active) setLoading(false); });
+
+    // Determine admin status from the role claim carried in the JWT.
+    authService.isAdmin()
+      .then(admin => {
+        if (!active) return;
+        setIsAdmin(admin);
+        cache.set(CACHE_KEYS.isAdmin, admin);
+      })
+      .catch(() => {});
 
     return () => { active = false; };
   }, []);
@@ -67,14 +81,20 @@ export function useProfile() {
     router.push('/(app)/profile/notifications');
   }
 
+  function goToManageUsers() {
+    router.push('/(app)/profile/manage-users');
+  }
+
   return {
     profile,
     loading,
+    isAdmin,
     initials,
     displayLabel,
     handleLogout,
     goToAccount,
     goToSecurity,
     goToNotifications,
+    goToManageUsers,
   };
 }

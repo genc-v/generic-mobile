@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { contentService } from '../services/content.service';
+import { confirm } from '../utils/confirm';
 import { CategoryDetail } from '../types/content.types';
 
 type Args = {
@@ -52,6 +53,13 @@ export function useCategoryForm({ visible, orgId, editing, onSaved, onDeleted }:
 
   async function handleDelete() {
     if (!editing) return;
+    const ok = await confirm({
+      title: 'Delete category',
+      message: `Delete the "${editing.name}" category? This cannot be undone.`,
+      confirmLabel: 'Delete',
+      destructive: true,
+    });
+    if (!ok) return;
     setDeleting(true);
     try {
       await contentService.deleteCategory(orgId, editing.categoryId);

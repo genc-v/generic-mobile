@@ -60,6 +60,23 @@ export function CardListSkeleton({ rows = 3, height = 86 }: { rows?: number; hei
   );
 }
 
+// 3-column thumbnail grid (media library).
+export function GridSkeleton({ items = 9 }: { items?: number }) {
+  return (
+    <View style={styles.grid}>
+      {Array.from({ length: items }).map((_, i) => (
+        <View key={i} style={styles.gridCell}>
+          <Skeleton width="100%" height={76} radius={0} />
+          <View style={{ padding: 8, gap: 6 }}>
+            <Skeleton width="80%" height={9} />
+            <Skeleton width="45%" height={8} />
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 // Stacked form fields (account / security / settings).
 export function FormSkeleton({ fields = 4 }: { fields?: number }) {
   return (
@@ -116,4 +133,20 @@ const styles = StyleSheet.create({
   },
 
   form: { padding: 20, gap: 18 },
+
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    padding: 16,
+    paddingTop: 12,
+  },
+  gridCell: {
+    width: '31%',
+    backgroundColor: DS.surface2,
+    borderWidth: 1,
+    borderColor: DS.border,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
 });

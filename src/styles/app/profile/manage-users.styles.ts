@@ -1,0 +1,229 @@
+import { StyleSheet } from 'react-native';
+import { DS } from '../../../constants/ds';
+
+// Shared styles for the admin-only Manage Users area (select / users / roles).
+export const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: DS.bg },
+  scroll: { padding: 16, paddingBottom: 40 },
+  listContent: { padding: 16, paddingBottom: 120 },
+
+  sectionLabel: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: DS.text3,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: 10,
+  },
+
+  // ---- Nav cards (select screen) ----
+  navRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    backgroundColor: DS.surface2,
+    borderWidth: 1,
+    borderColor: DS.border,
+    borderRadius: 10,
+    padding: 16,
+    marginBottom: 10,
+  },
+  navIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: DS.bg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  navEmoji: { fontSize: 18 },
+  navLabel: { fontSize: 15, fontWeight: '600', color: DS.text1, letterSpacing: -0.2 },
+  navSub: { fontSize: 12, color: DS.text3, marginTop: 3, lineHeight: 16 },
+  chevron: { width: 6, height: 10, justifyContent: 'center' },
+  chevL1: {
+    position: 'absolute', width: 1.3, height: 6, backgroundColor: DS.text3,
+    borderRadius: 1, right: 0, top: 0, transform: [{ rotate: '45deg' }, { translateY: 1 }],
+  },
+  chevL2: {
+    position: 'absolute', width: 1.3, height: 6, backgroundColor: DS.text3,
+    borderRadius: 1, right: 0, bottom: 0, transform: [{ rotate: '-45deg' }, { translateY: -1 }],
+  },
+
+  // ---- Search ----
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 4,
+  },
+  searchInput: {
+    flex: 1,
+    height: 38,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: DS.border2,
+    backgroundColor: DS.surface2,
+    paddingHorizontal: 12,
+    fontSize: 14,
+    color: DS.text1,
+  },
+
+  // ---- List rows ----
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: DS.surface2,
+    borderWidth: 1,
+    borderColor: DS.border,
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 8,
+  },
+  rowSelected: {
+    borderColor: DS.accentBorder,
+    backgroundColor: DS.accentDim,
+  },
+  rowAvatar: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: DS.surface3,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rowAvatarText: { fontSize: 14, fontWeight: '700', color: DS.text1 },
+  rowBody: { flex: 1, gap: 2 },
+  rowTitle: { fontSize: 14, fontWeight: '600', color: DS.text1, letterSpacing: -0.2 },
+  rowSub: { fontSize: 12, color: DS.text3 },
+
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    borderColor: DS.border2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxOn: {
+    backgroundColor: DS.accent,
+    borderColor: DS.accent,
+  },
+  checkboxTick: { color: '#0A0A0A', fontSize: 13, fontWeight: '800' },
+
+  badge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    backgroundColor: DS.accentDim,
+    borderWidth: 1,
+    borderColor: DS.accentBorder,
+  },
+  badgeText: { fontSize: 11, fontWeight: '600', color: DS.accent },
+
+  // ---- Infinite scroll footer ----
+  loadingMore: { paddingVertical: 16, alignItems: 'center' },
+  disabled: { opacity: 0.4 },
+
+  // ---- Selection action bar ----
+  actionBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: DS.border,
+    backgroundColor: DS.surface2,
+  },
+  actionCount: { fontSize: 14, color: DS.text1, fontWeight: '600' },
+
+  // ---- Empty / states ----
+  empty: { alignItems: 'center', justifyContent: 'center', paddingVertical: 60, gap: 6 },
+  emptyTitle: { fontSize: 15, color: DS.text2, fontWeight: '500' },
+  emptyHint: { fontSize: 13, color: DS.text3 },
+  errorText: { fontSize: 13, color: DS.red, fontWeight: '500', textAlign: 'center', paddingHorizontal: 16 },
+
+  // ---- Floating create button ----
+  fab: {
+    position: 'absolute',
+    right: 18,
+    bottom: 24,
+    height: 50,
+    paddingHorizontal: 18,
+    borderRadius: 25,
+    backgroundColor: DS.accent,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
+  },
+  fabLabel: { fontSize: 15, fontWeight: '700', color: '#0A0A0A' },
+
+  // ---- Bottom sheets ----
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
+  sheetWrapper: { justifyContent: 'flex-end' },
+  sheet: {
+    backgroundColor: DS.surface2,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    borderWidth: 1,
+    borderColor: DS.border,
+  },
+  handle: {
+    alignSelf: 'center',
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: DS.border2,
+    marginBottom: 16,
+  },
+  sheetTitle: { fontSize: 17, fontWeight: '700', color: DS.text1, marginBottom: 4 },
+  sheetSubtitle: { fontSize: 13, color: DS.text3, marginBottom: 18, lineHeight: 18 },
+  divider: { height: 1, backgroundColor: DS.border, marginVertical: 16 },
+
+  // ---- Role chips (inside user sheet) ----
+  chipsLabel: { fontSize: 12, fontWeight: '600', color: DS.text2, marginBottom: 10, letterSpacing: 0.2 },
+  chipsWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: DS.border2,
+    backgroundColor: DS.bg,
+  },
+  chipOn: {
+    backgroundColor: DS.accentDim,
+    borderColor: DS.accentBorder,
+  },
+  chipText: { fontSize: 13, color: DS.text2, fontWeight: '500' },
+  chipTextOn: { color: DS.accent },
+  chipSpinner: { width: 12, height: 12 },
+
+  // ---- Destructive ----
+  deleteBtn: {
+    height: 44,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(239,68,68,0.3)',
+    backgroundColor: 'rgba(239,68,68,0.07)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  deleteBtnLabel: { fontSize: 14, fontWeight: '600', color: DS.red },
+
+  successText: { fontSize: 13, color: DS.green, fontWeight: '500', textAlign: 'center', marginTop: 4 },
+});

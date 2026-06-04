@@ -1,19 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { contentService } from '../services/content.service';
 import { assetService } from '../services/asset.service';
+import { confirm } from '../utils/confirm';
 import { ContentDTO, TagDTO } from '../types/content.types';
+
+const AUTOSAVE_DELAY = 1000;
 
 export function useEntryEditor(orgId: string, entryId: string) {
   const router = useRouter();
   const [entry, setEntry] = useState<ContentDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [autosaving, setAutosaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [unpublishing, setUnpublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Signature of the last persisted state — lets autosave skip the initial
+  // hydration and no-op edits. `null` until the entry has loaded.
+  const lastSavedSig = useRef<string | null>(null);
+  const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [title, setTitle] = useState('');
   const [richContent, setRichContent] = useState('');
@@ -38,10 +47,37 @@ export function useEntryEditor(orgId: string, entryId: string) {
         setCategoryName(data.categoryName);
         setTags(data.tags ?? []);
         setAssetUrl(data.assetUrl);
+        lastSavedSig.current = sigOf(
+          data.title ?? '', data.richContent ?? '', data.categoryId, data.assetUrl, data.tags ?? [],
+        );
       })
       .catch(() => setError('Failed to load entry.'))
       .finally(() => setLoading(false));
   }, [orgId, entryId]);
+
+  function sigOf(t: string, rc: string, cat: string | null, asset: string | null, tg: TagDTO[]) {
+    return JSON.stringify({
+      t, rc,
+      cat: cat ?? null,
+      asset: asset ?? null,
+      tags: tg.map(x => x.tagId).sort(),
+    });
+  }
+
+  function currentSig() {
+    return sigOf(title, richContent, categoryId, assetUrl, tags);
+  }
+
+  // Debounced background save: whenever a field changes after hydration, save
+  // silently and refresh the entry so the status pill and slug stay accurate.
+  useEffect(() => {
+    if (lastSavedSig.current === null) return;       // not loaded yet
+    if (currentSig() === lastSavedSig.current) return; // nothing changed
+    if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+    autosaveTimer.current = setTimeout(() => { persist(true); }, AUTOSAVE_DELAY);
+    return () => { if (autosaveTimer.current) clearTimeout(autosaveTimer.current); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [title, richContent, categoryId, assetUrl, tags]);
 
   function buildPayload() {
     return {
@@ -146,30 +182,40 @@ export function useEntryEditor(orgId: string, entryId: string) {
     setTags(prev => prev.filter(t => t.tagId !== tagId));
   }
 
-  async function save(publishedStatus?: string) {
-    setSaving(true);
+  // Core save. `silent` is used by autosave (no spinner/toast). The server
+  // recalculates status and generates the slug, so we refetch afterwards.
+  async function persist(silent: boolean) {
+    const sig = currentSig();
+    if (silent) setAutosaving(true); else { setSaving(true); setSaveSuccess(false); }
     setError(null);
-    setSaveSuccess(false);
     try {
       await contentService.saveEntry(orgId, entryId, buildPayload());
-      if (publishedStatus) {
-        setEntry(prev => prev ? { ...prev, status: publishedStatus } : prev);
+      lastSavedSig.current = sig;
+      try {
+        const fresh = await contentService.getEntry(orgId, entryId);
+        setEntry(fresh); // refreshes status + slug; field state is left as the user has it
+      } catch {
+        // Refresh is best-effort — the save itself already succeeded.
       }
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 2000);
+      if (!silent) {
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 2000);
+      }
     } catch {
       setError('Failed to save entry.');
     } finally {
-      setSaving(false);
+      if (silent) setAutosaving(false); else setSaving(false);
     }
   }
 
   function handleSaveDraft() {
-    return save();
+    if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+    return persist(false);
   }
 
   function handlePublish() {
-    return save('Published');
+    if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+    return persist(false);
   }
 
   async function handleUnpublish() {
@@ -186,6 +232,13 @@ export function useEntryEditor(orgId: string, entryId: string) {
   }
 
   async function handleDelete() {
+    const ok = await confirm({
+      title: 'Delete entry',
+      message: `Permanently delete ${entry?.title ? `"${entry.title}"` : 'this entry'}? This cannot be undone.`,
+      confirmLabel: 'Delete',
+      destructive: true,
+    });
+    if (!ok) return;
     setDeleting(true);
     setError(null);
     try {
@@ -212,7 +265,7 @@ export function useEntryEditor(orgId: string, entryId: string) {
   const canPublish = missingForPublish.length === 0;
 
   return {
-    entry, loading, saving, deleting, unpublishing, uploading, error, saveSuccess,
+    entry, loading, saving, autosaving, deleting, unpublishing, uploading, error, saveSuccess,
     title, setTitle,
     richContent, setRichContent,
     selection, setSelection,

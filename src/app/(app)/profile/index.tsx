@@ -61,6 +61,9 @@ export default function ProfileScreen() {
           <NavRow label="Account Settings" emoji="⚙️" onPress={vm.goToAccount} />
           <NavRow label="Notifications" emoji="🔔" onPress={vm.goToNotifications} />
           <NavRow label="Security & 2FA" emoji="🔐" onPress={vm.goToSecurity} />
+          {vm.isAdmin && (
+            <NavRow label="Manage Users" emoji="👥" onPress={vm.goToManageUsers} />
+          )}
           <NavRow label="Log Out" emoji="🚪" onPress={vm.handleLogout} destructive />
         </View>
       </ScrollView>
