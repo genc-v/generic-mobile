@@ -1,5 +1,6 @@
 import * as signalR from '@microsoft/signalr';
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 import {
     NotificationItem,
     NotificationsListResponse,
@@ -7,6 +8,13 @@ import {
 import { authService, SECURE_STORE_KEYS } from './auth.service';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://user.jonfjz.dev/api';
+
+// Hub lives on the auth service — same base as auth.service AUTH_API_URL.
+const AUTH_API_BASE = process.env.EXPO_PUBLIC_API_URL
+  ? `${process.env.EXPO_PUBLIC_API_URL}/auth`
+  : 'https://user.jonfjz.dev/api/auth';
+
+const NOTIFICATIONS_HUB_URL = `${AUTH_API_BASE}/hubs/notifications`;
 
 function normalizeNotification(raw: NotificationItem): NotificationItem {
   return {
@@ -57,16 +65,23 @@ export async function startNotificationHub(
 
   await stopNotificationHub();
 
-  const hubUrl = `${BASE_URL}/auth/hubs/notifications?access_token=${encodeURIComponent(jwt)}`;
+  // Expo Go / React Native: WebSockets often fail on negotiate or upgrade (proxy,
+  // missing sticky sessions, RN stack). Long polling uses plain HTTP like REST.
+  const transport =
+    Platform.OS === 'web'
+      ? signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling
+      : signalR.HttpTransportType.LongPolling;
 
   connection = new signalR.HubConnectionBuilder()
-    .withUrl(hubUrl, {
-      // Expo Go / React Native: prefer WebSockets, fall back to long-polling.
-      transport:
-        signalR.HttpTransportType.WebSockets |
-        signalR.HttpTransportType.LongPolling,
+    .withUrl(NOTIFICATIONS_HUB_URL, {
+      transport,
+      accessTokenFactory: async () => {
+        await authService.checkAndRefreshJwt();
+        return (await SecureStore.getItemAsync(SECURE_STORE_KEYS.JWT_TOKEN)) ?? '';
+      },
     })
     .withAutomaticReconnect()
+    .configureLogging(signalR.LogLevel.Warning)
     .build();
 
   connection.on('ReceiveNotification', (payload: NotificationItem) => {

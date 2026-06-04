@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
-import { profileService } from '../services/profile.service';
+import { useEffect, useState } from 'react';
 import { authService } from '../services/auth.service';
-import { cache, CACHE_KEYS } from '../utils/cache';
+import { profileService } from '../services/profile.service';
 import { Profile } from '../types/profile.types';
+import { cache, CACHE_KEYS } from '../utils/cache';
 
 export function useProfile() {
   const router = useRouter();
