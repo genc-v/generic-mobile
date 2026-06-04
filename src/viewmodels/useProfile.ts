@@ -63,5 +63,18 @@ export function useProfile() {
     router.push('/(app)/profile/security');
   }
 
-  return { profile, loading, initials, displayLabel, handleLogout, goToAccount, goToSecurity };
+  function goToNotifications() {
+    router.push('/(app)/profile/notifications');
+  }
+
+  return {
+    profile,
+    loading,
+    initials,
+    displayLabel,
+    handleLogout,
+    goToAccount,
+    goToSecurity,
+    goToNotifications,
+  };
 }

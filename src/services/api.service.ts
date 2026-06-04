@@ -1,5 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
-import { Microservice, RequestType, ApiRequestOptions } from '../types/api.types';
+import { ApiRequestOptions, Microservice, RequestType } from '../types/api.types';
 import { authState } from '../utils/auth-state';
 import { authService, SECURE_STORE_KEYS } from './auth.service';
 
