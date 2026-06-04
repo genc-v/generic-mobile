@@ -22,9 +22,30 @@ export default function OrganisationsScreen() {
           <Brand size={26} />
           <Text style={styles.headerTitle}>Generic</Text>
         </View>
-        <TouchableOpacity style={styles.avatar} onPress={vm.goToProfile}>
-          <Text style={styles.avatarText}>ME</Text>
-        </TouchableOpacity>
+        <View style={styles.headerRight}>
+          <TouchableOpacity
+            style={styles.notifBtn}
+            onPress={vm.goToNotifications}
+            activeOpacity={0.7}
+            accessibilityLabel={
+              vm.unreadCount > 0
+                ? `Notifications, ${vm.unreadCount} unread`
+                : 'Notifications'
+            }
+          >
+            <Text style={styles.notifEmoji}>🔔</Text>
+            {vm.unreadCount > 0 && (
+              <View style={styles.notifBadge}>
+                <Text style={styles.notifBadgeText}>
+                  {vm.unreadCount > 9 ? '9+' : vm.unreadCount}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.avatar} onPress={vm.goToProfile} activeOpacity={0.7}>
+            <Text style={styles.avatarText}>ME</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.titleSection}>

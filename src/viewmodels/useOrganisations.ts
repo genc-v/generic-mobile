@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { organisationService } from '../services/organisation.service';
+import { fetchNotifications } from '../services/notification.service';
 import { Organisation } from '../types/organisation.types';
 
 const PAGE_SIZE = 10;
@@ -13,6 +14,7 @@ export function useOrganisations() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const currentPage = useRef(1);
   const hasMore = useRef(true);
@@ -31,10 +33,20 @@ export function useOrganisations() {
     }
   }, []);
 
+  const refreshUnreadCount = useCallback(async () => {
+    try {
+      const items = await fetchNotifications();
+      setUnreadCount(items.filter(n => !n.isRead).length);
+    } catch {
+      // Keep the last count if the request fails.
+    }
+  }, []);
+
   // Refetch on focus so renames/new orgs from other screens show up. First load
   // shows the skeleton; later focuses refetch silently to keep the list visible.
   useFocusEffect(
     useCallback(() => {
+      refreshUnreadCount();
       if (!hasLoaded.current) {
         setLoading(true);
         setError(null);
@@ -43,7 +55,7 @@ export function useOrganisations() {
         fetchPage(1, true);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fetchPage]),
+    }, [fetchPage, refreshUnreadCount]),
   );
 
   const handleRefresh = useCallback(async () => {
@@ -70,6 +82,10 @@ export function useOrganisations() {
     router.push('/(app)/profile');
   }
 
+  function goToNotifications() {
+    router.push('/(app)/profile/notifications');
+  }
+
   function goToOrg(orgId: string) {
     router.push(`/(app)/${orgId}`);
   }
@@ -77,6 +93,7 @@ export function useOrganisations() {
   return {
     orgs, totalCount, loading, loadingMore, error,
     showCreate, setShowCreate, hasMore,
-    handleRefresh, handleEndReached, handleOrgCreated, goToProfile, goToOrg,
+    unreadCount,
+    handleRefresh, handleEndReached, handleOrgCreated, goToProfile, goToNotifications, goToOrg,
   };
 }
