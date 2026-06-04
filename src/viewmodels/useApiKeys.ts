@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import * as Clipboard from 'expo-clipboard';
 import { organisationService } from '../services/organisation.service';
+import { confirm } from '../utils/confirm';
 import { ApiKey } from '../types/organisation.types';
 
 export type ExpiryOption = 'none' | '30d' | '90d' | '1y';
@@ -63,6 +64,16 @@ export function useApiKeys(orgId: string) {
   }
 
   async function handleToggle(keyId: string) {
+    // Disabling a key is disruptive — confirm before revoking access.
+    if (keys.find(k => k.id === keyId)?.isActive) {
+      const ok = await confirm({
+        title: 'Disable API key',
+        message: 'Disable this API key? Any apps using it will stop working until it is re-enabled.',
+        confirmLabel: 'Disable',
+        destructive: true,
+      });
+      if (!ok) return;
+    }
     setTogglingId(keyId);
     try {
       await organisationService.toggleApiKey(orgId, keyId);
@@ -75,6 +86,13 @@ export function useApiKeys(orgId: string) {
   }
 
   async function handleDelete(keyId: string) {
+    const ok = await confirm({
+      title: 'Delete API key',
+      message: 'Permanently delete this API key? Any apps using it will stop working. This cannot be undone.',
+      confirmLabel: 'Delete',
+      destructive: true,
+    });
+    if (!ok) return;
     setDeletingId(keyId);
     try {
       await organisationService.deleteApiKey(orgId, keyId);

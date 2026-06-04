@@ -13,15 +13,20 @@ import { CategoryFormSheet } from '../../../components/content/CategoryFormSheet
 import { TagFormSheet } from '../../../components/content/TagFormSheet';
 import { ContentFiltersSheet } from '../../../components/content/ContentFiltersSheet';
 import { BottomTabBar, ContentTab } from '../../../components/content/BottomTabBar';
-import { ListSkeleton, SimpleListSkeleton, ChipSkeleton } from '../../../components/ui/skeletons';
+import { MediaGrid } from '../../../components/media/MediaGrid';
+import { AssetDetailSheet } from '../../../components/media/AssetDetailSheet';
+import { UploadIcon } from '../../../components/media/MediaIcons';
+import { ListSkeleton, SimpleListSkeleton, ChipSkeleton, GridSkeleton } from '../../../components/ui/skeletons';
 import { useContentList, StatusFilter } from '../../../viewmodels/useContentList';
 import { useOrgSettings } from '../../../viewmodels/useOrgSettings';
 import { useCategoryList } from '../../../viewmodels/useCategoryList';
 import { useTagList } from '../../../viewmodels/useTagList';
+import { useMediaLibrary } from '../../../viewmodels/useMediaLibrary';
 import { styles } from '../../../styles/app/content-list.styles';
 import { styles as catStyles } from '../../../styles/app/categories.styles';
 import { styles as tagStyles } from '../../../styles/app/tags.styles';
 import { styles as filterStyles } from '../../../styles/app/content-filters.styles';
+import { styles as mediaStyles } from '../../../styles/app/media.styles';
 import { DS } from '../../../constants/ds';
 
 const FILTERS: StatusFilter[] = ['All', 'New', 'Draft', 'Published', 'Unpublished'];
@@ -35,6 +40,7 @@ export default function OrgDashboard() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<ContentTab>('Content');
+  const mediaVm = useMediaLibrary(orgId, activeTab === 'Media');
 
   const { canEdit } = settingsVm;
 
@@ -50,7 +56,21 @@ export default function OrgDashboard() {
     <SafeAreaView style={styles.safe} edges={['top']}>
       <StatusBar style="light" />
 
-      <TopBar title={activeTab} />
+      <TopBar
+        title={activeTab}
+        right={activeTab === 'Media' && canEdit ? (
+          <TouchableOpacity
+            style={mediaStyles.uploadBtn}
+            onPress={mediaVm.handleUpload}
+            disabled={mediaVm.uploading}
+            activeOpacity={0.8}
+          >
+            {mediaVm.uploading
+              ? <ActivityIndicator size="small" color={DS.accent} />
+              : <UploadIcon />}
+          </TouchableOpacity>
+        ) : undefined}
+      />
 
       {activeTab === 'Content' && (
         <>
@@ -298,10 +318,40 @@ export default function OrgDashboard() {
       )}
 
       {activeTab === 'Media' && (
-        <View style={[styles.centred, styles.scrollEmpty]}>
-          <Text style={styles.emptyText}>{activeTab}</Text>
-          <Text style={styles.emptyHint}>Coming soon.</Text>
-        </View>
+        <>
+          {mediaVm.loading ? (
+            <GridSkeleton items={9} />
+          ) : mediaVm.error && mediaVm.assets.length === 0 ? (
+            <View style={[mediaStyles.centred, styles.scrollEmpty]}>
+              <Text style={mediaStyles.errorText}>{mediaVm.error}</Text>
+              <TouchableOpacity style={mediaStyles.retryBtn} onPress={mediaVm.fetchAssets}>
+                <Text style={mediaStyles.retryLabel}>Retry</Text>
+              </TouchableOpacity>
+            </View>
+          ) : mediaVm.assets.length === 0 ? (
+            <View style={[mediaStyles.centred, styles.scrollEmpty]}>
+              <Text style={mediaStyles.emptyText}>No media yet.</Text>
+              <Text style={mediaStyles.emptyHint}>
+                {canEdit ? 'Tap the upload button to add files.' : 'Nothing here yet.'}
+              </Text>
+            </View>
+          ) : (
+            <MediaGrid assets={mediaVm.assets} onPress={mediaVm.openDetail} />
+          )}
+
+          <AssetDetailSheet
+            visible={mediaVm.showDetail}
+            asset={mediaVm.selected}
+            loading={mediaVm.loadingDetail}
+            canEdit={canEdit}
+            deleting={mediaVm.deleting}
+            copied={mediaVm.copied}
+            error={mediaVm.error}
+            onCopy={mediaVm.copyUrl}
+            onDelete={mediaVm.handleDelete}
+            onClose={mediaVm.closeDetail}
+          />
+        </>
       )}
 
       <BottomTabBar active={activeTab} onPress={handleTabPress} />

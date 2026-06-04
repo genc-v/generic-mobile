@@ -59,6 +59,7 @@ export const cache = {
 export const CACHE_KEYS = {
   profile: 'cache_profile',
   account: 'cache_account',
+  isAdmin: 'cache_is_admin',
   org: (orgId: string) => `cache_org_${orgId}`,
   orgRole: (orgId: string) => `cache_org_role_${orgId}`,
 };

@@ -61,7 +61,6 @@ export default function EntryEditor() {
   const { orgId, entryId } = useLocalSearchParams<{ orgId: string; entryId: string }>();
   const vm = useEntryEditor(orgId, entryId);
   const insets = useSafeAreaInsets();
-  const [confirmDelete, setConfirmDelete] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
   const status = vm.entry?.status ?? 'New';
@@ -100,6 +99,9 @@ export default function EntryEditor() {
             </Svg>
             <Text style={styles.previewLabel}>Preview</Text>
           </TouchableOpacity>
+          {vm.autosaving && (
+            <Text style={{ color: DS.text3, fontSize: 11, fontWeight: '500', marginRight: 2 }}>Saving…</Text>
+          )}
           <StatusPill label={status} color={statusColor} />
         </View>
       </View>
@@ -222,6 +224,13 @@ export default function EntryEditor() {
             </View>
 
             <View style={styles.propRow}>
+              <Text style={styles.propLabel}>Slug</Text>
+              <Text style={[styles.propValue, { fontVariant: ['tabular-nums'] }]} numberOfLines={1}>
+                {vm.entry?.slug || '—'}
+              </Text>
+            </View>
+
+            <View style={styles.propRow}>
               <Text style={styles.propLabel}>Status</Text>
               <StatusPill label={status} color={statusColor} />
             </View>
@@ -275,23 +284,11 @@ export default function EntryEditor() {
               </TouchableOpacity>
             )}
 
-            {confirmDelete ? (
-              <>
-                <Text style={styles.confirmText}>Delete this entry permanently?</Text>
-                <View style={styles.confirmRow}>
-                  <View style={{ flex: 1 }}>
-                    <GhostBtn label="Cancel" full onPress={() => setConfirmDelete(false)} />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <PrimaryBtn label="Delete" full onPress={vm.handleDelete} loading={vm.deleting} />
-                  </View>
-                </View>
-              </>
-            ) : (
-              <TouchableOpacity style={styles.deleteBtn} onPress={() => setConfirmDelete(true)} activeOpacity={0.7}>
-                <Text style={styles.deleteLabel}>Delete Entry</Text>
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity style={styles.deleteBtn} onPress={vm.handleDelete} disabled={vm.deleting} activeOpacity={0.7}>
+              {vm.deleting
+                ? <ActivityIndicator color={DS.red} />
+                : <Text style={styles.deleteLabel}>Delete Entry</Text>}
+            </TouchableOpacity>
           </View>
 
           {(vm.error || vm.saveSuccess) && (

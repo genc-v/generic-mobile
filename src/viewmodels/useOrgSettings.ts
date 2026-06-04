@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { organisationService } from '../services/organisation.service';
 import { cache, CACHE_KEYS } from '../utils/cache';
+import { confirm } from '../utils/confirm';
 import { OrgRoleName } from '../types/organisation.types';
 
 export function useOrgSettings(orgId: string) {
@@ -16,7 +17,6 @@ export function useOrgSettings(orgId: string) {
 
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -69,10 +69,13 @@ export function useOrgSettings(orgId: string) {
   }
 
   async function handleDelete() {
-    if (!confirmDelete) {
-      setConfirmDelete(true);
-      return;
-    }
+    const ok = await confirm({
+      title: 'Delete organisation',
+      message: `Permanently delete "${editName.trim() || 'this organisation'}"? All of its content will be lost. This cannot be undone.`,
+      confirmLabel: 'Delete',
+      destructive: true,
+    });
+    if (!ok) return;
     setDeleting(true);
     try {
       await organisationService.deleteOrg(orgId);
@@ -94,8 +97,6 @@ export function useOrgSettings(orgId: string) {
     setEditName,
     saving,
     deleting,
-    confirmDelete,
-    setConfirmDelete,
     error,
     handleSave,
     handleDelete,
