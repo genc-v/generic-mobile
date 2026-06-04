@@ -41,8 +41,6 @@ function NotificationRow({ item }: { item: NotificationItem }) {
 
 export default function NotificationsScreen() {
   const vm = useNotifications();
-  const unreadCount = vm.notifications.filter(n => !n.isRead).length;
-  const hasItems = vm.notifications.length > 0;
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -51,14 +49,10 @@ export default function NotificationsScreen() {
 
       {!vm.loading && !vm.error && (
         <View style={styles.toolbar}>
-          {hasItems && (
+          {vm.hasItems && (
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Inbox</Text>
-              <Text style={styles.summaryCount}>
-                {unreadCount > 0
-                  ? `${unreadCount} unread`
-                  : 'All caught up'}
-              </Text>
+              <Text style={styles.summaryCount}>{vm.inboxSummary}</Text>
             </View>
           )}
           <View style={styles.actions}>
@@ -66,7 +60,7 @@ export default function NotificationsScreen() {
               style={[styles.actionPill, styles.actionPillPrimary]}
               onPress={vm.markAllRead}
               hitSlop={8}
-              disabled={!hasItems || unreadCount === 0}
+              disabled={!vm.canMarkAllRead}
               activeOpacity={0.7}
             >
               <Text style={[styles.actionPillText, styles.actionPillTextPrimary]}>
@@ -77,7 +71,7 @@ export default function NotificationsScreen() {
               style={[styles.actionPill, styles.actionPillMuted]}
               onPress={vm.clearAll}
               hitSlop={8}
-              disabled={!hasItems}
+              disabled={!vm.canClearAll}
               activeOpacity={0.7}
             >
               <Text style={[styles.actionPillText, styles.actionPillTextMuted]}>
@@ -101,20 +95,16 @@ export default function NotificationsScreen() {
             <Text style={styles.retryText}>Retry</Text>
           </TouchableOpacity>
         </View>
-      ) : !hasItems ? (
+      ) : !vm.hasItems ? (
         <View style={styles.center}>
           <View style={styles.emptyIconWrap}>
             <Text style={styles.emptyIcon}>🔔</Text>
           </View>
           <Text style={styles.emptyTitle}>No notifications yet</Text>
-          <Text style={styles.emptyHint}>
-            {vm.hubConnected
-              ? 'When something happens in your account, updates will show up here in real time.'
-              : 'Nothing in your inbox yet. Live updates need the API running on port 5053.'}
-          </Text>
+          <Text style={styles.emptyHint}>{vm.emptyHint}</Text>
           <View style={[styles.statusPill, vm.hubConnected && styles.statusPillLive]}>
             <Text style={[styles.statusPillText, vm.hubConnected && styles.statusPillTextLive]}>
-              {vm.hubConnected ? '● Live connection' : '○ Offline — REST only'}
+              {vm.statusLabel}
             </Text>
           </View>
         </View>

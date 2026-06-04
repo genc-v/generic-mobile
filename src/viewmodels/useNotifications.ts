@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { NotificationItem } from '../types/notification.types';
 import {
   fetchNotifications,
   startNotificationHub,
   stopNotificationHub,
 } from '../services/notification.service';
+import { countUnreadNotifications } from './useNotificationUnreadCount';
 
 function mergeNotification(
   list: NotificationItem[],
@@ -19,6 +20,27 @@ export function useNotifications() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hubConnected, setHubConnected] = useState(false);
+
+  const unreadCount = useMemo(
+    () => countUnreadNotifications(notifications),
+    [notifications],
+  );
+  const hasItems = notifications.length > 0;
+  const canMarkAllRead = hasItems && unreadCount > 0;
+  const canClearAll = hasItems;
+
+  const inboxSummary = useMemo(() => {
+    if (!hasItems) return '';
+    return unreadCount > 0 ? `${unreadCount} unread` : 'All caught up';
+  }, [hasItems, unreadCount]);
+
+  const emptyHint = hubConnected
+    ? 'When something happens in your account, updates will show up here in real time.'
+    : 'Nothing in your inbox yet. Live updates need the API running on port 5053.';
+
+  const statusLabel = hubConnected
+    ? '● Live connection'
+    : '○ Offline — REST only';
 
   const load = useCallback(async () => {
     setError(null);
@@ -67,6 +89,13 @@ export function useNotifications() {
     loading,
     error,
     hubConnected,
+    unreadCount,
+    hasItems,
+    canMarkAllRead,
+    canClearAll,
+    inboxSummary,
+    emptyHint,
+    statusLabel,
     markAllRead,
     clearAll,
     reload: load,
