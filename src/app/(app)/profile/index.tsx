@@ -60,6 +60,9 @@ export default function ProfileScreen() {
         <View style={styles.navSection}>
           <NavRow label="Account Settings" emoji="⚙️" onPress={vm.goToAccount} />
           <NavRow label="Security & 2FA" emoji="🔐" onPress={vm.goToSecurity} />
+          {vm.isAdmin && (
+            <NavRow label="Manage Users" emoji="👥" onPress={vm.goToManageUsers} />
+          )}
           <NavRow label="Log Out" emoji="🚪" onPress={vm.handleLogout} destructive />
         </View>
       </ScrollView>

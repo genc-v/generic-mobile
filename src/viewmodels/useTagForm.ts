@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { contentService } from '../services/content.service';
+import { confirm } from '../utils/confirm';
 import { TagDTO } from '../types/content.types';
 
 type Args = {
@@ -46,6 +47,13 @@ export function useTagForm({ visible, orgId, editing, onSaved, onDeleted }: Args
 
   async function handleDelete() {
     if (!editing) return;
+    const ok = await confirm({
+      title: 'Delete tag',
+      message: `Delete the "${editing.name}" tag? This cannot be undone.`,
+      confirmLabel: 'Delete',
+      destructive: true,
+    });
+    if (!ok) return;
     setDeleting(true);
     try {
       await contentService.deleteTag(orgId, editing.tagId);

@@ -5,6 +5,8 @@ export enum Microservice {
   ENTRY = 'entry',
   ORGANISATION = 'organisation',
   ASSET = 'asset',
+  USER = 'user',
+  ROLES = 'roles',
 }
 
 export enum RequestType {

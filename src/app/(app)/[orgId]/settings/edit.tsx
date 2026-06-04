@@ -1,12 +1,12 @@
 import {
   View, Text, TextInput, ScrollView, TouchableOpacity,
-  KeyboardAvoidingView, Platform,
+  KeyboardAvoidingView, Platform, ActivityIndicator,
 } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { TopBar } from '../../../../components/layout/top-bar';
-import { PrimaryBtn, GhostBtn } from '../../../../components/ui/button';
+import { PrimaryBtn } from '../../../../components/ui/button';
 import { FormSkeleton } from '../../../../components/ui/skeletons';
 import { useOrgSettings } from '../../../../viewmodels/useOrgSettings';
 import { styles } from '../../../../styles/app/org-settings.styles';
@@ -49,26 +49,11 @@ export default function EditOrganisation() {
               <>
                 <Text style={[styles.sectionLabel, { marginTop: 28 }]}>DANGER ZONE</Text>
                 <View style={styles.card}>
-                  {vm.confirmDelete ? (
-                    <>
-                      <Text style={styles.confirmText}>
-                        This will permanently delete the organisation and all its data. This cannot be undone.
-                      </Text>
-                      <View style={styles.confirmActions}>
-                        <View style={{ flex: 1 }}>
-                          <GhostBtn label="Cancel" full onPress={() => vm.setConfirmDelete(false)} />
-                        </View>
-                        <View style={{ width: 10 }} />
-                        <View style={{ flex: 1 }}>
-                          <PrimaryBtn label="Delete" full onPress={vm.handleDelete} loading={vm.deleting} />
-                        </View>
-                      </View>
-                    </>
-                  ) : (
-                    <TouchableOpacity style={styles.deleteBtn} onPress={vm.handleDelete} activeOpacity={0.7}>
-                      <Text style={styles.deleteBtnLabel}>Delete Organisation</Text>
-                    </TouchableOpacity>
-                  )}
+                  <TouchableOpacity style={styles.deleteBtn} onPress={vm.handleDelete} disabled={vm.deleting} activeOpacity={0.7}>
+                    {vm.deleting
+                      ? <ActivityIndicator color={DS.red} />
+                      : <Text style={styles.deleteBtnLabel}>Delete Organisation</Text>}
+                  </TouchableOpacity>
                 </View>
               </>
             )}
