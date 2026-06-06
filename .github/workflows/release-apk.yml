@@ -4,72 +4,41 @@ on:
   push:
     branches: [main, master]
 
-# Needed so the workflow can create a GitHub Release and upload assets.
 permissions:
   contents: write
 
 jobs:
   build-apk:
-    # Runs on your own machine, which only needs Docker installed.
-    # Register the runner via: Repo → Settings → Actions → Runners.
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Builds the toolchain image. Docker layer cache on the host makes every
-      # run after the first one fast (only re-runs if Dockerfile.android changes).
-      - name: Build the builder image
-        run: docker build -t generic-cms-builder -f Dockerfile.android .
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
 
-      # Runs the actual build inside the container. The workspace is mounted in,
-      # and we run as the host user so the generated files aren't owned by root.
-      # The Gradle cache is a host directory owned by the runner user (so it's
-      # writable when running as non-root) and persists between runs.
-      - name: Build release APK in container
-        run: |
-          GRADLE_CACHE="$HOME/.cache/generic-cms-gradle"
-          mkdir -p "$GRADLE_CACHE"
-          docker run --rm \
-            -u "$(id -u):$(id -g)" \
-            -e HOME=/tmp \
-            -e GRADLE_USER_HOME=/gradle \
-            -v "$PWD":/workspace:z \
-            -v "$GRADLE_CACHE":/gradle:z \
-            -w /workspace \
-            generic-cms-builder \
-            bash -lc '
-              set -e
-              # The workspace is a persistent bind mount on the self-hosted
-              # runner, so node_modules and the generated android/ dir survive
-              # between runs. Gradle writes build artifacts inside
-              # node_modules (e.g. react-native-worklets/android/build), which
-              # npm ci cannot clean up (rmdir fails with ENOTEMPTY). Wipe both
-              # with rm -rf first so every build starts from a clean tree.
-              rm -rf node_modules android
-              npm ci
-              npx expo prebuild --platform android --no-install
-              cd android
-              chmod +x ./gradlew
-              ./gradlew assembleRelease --no-daemon
-            '
+      - name: Install dependencies
+        run: npm ci
 
-      # Parse the version straight from app.json without needing Node on the host.
-      - name: Prepare release asset
-        id: apk
+      - name: Build APK via EAS
+        id: eas
         run: |
-          VERSION=$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' app.json | head -1)
-          OUT="generic-cms-v${VERSION}-${{ github.run_number }}.apk"
-          cp android/app/build/outputs/apk/release/app-release.apk "$OUT"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "path=$OUT" >> "$GITHUB_OUTPUT"
+          npx eas-cli build \
+            --platform android \
+            --profile preview \
+            --non-interactive \
+            --output ./app-release.apk
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.apk.outputs.version }}-${{ github.run_number }}
-          name: v${{ steps.apk.outputs.version }} (build ${{ github.run_number }})
-          body: |
-            Automated release built from `${{ github.sha }}`.
-          files: ${{ steps.apk.outputs.path }}
+          tag_name: v${{ github.run_number }}
+          name: Build ${{ github.run_number }}
+          body: Automated release from `${{ github.sha }}`.
+          files: ./app-release.apk
