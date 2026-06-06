@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { ActionSheetIOS, Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { contentService } from '../services/content.service';
@@ -31,6 +32,7 @@ export function useEntryEditor(orgId: string, entryId: string) {
   const [tags, setTags] = useState<TagDTO[]>([]);
   const [assetUrl, setAssetUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [showMediaPicker, setShowMediaPicker] = useState(false);
 
   const [selection, setSelection] = useState({ start: 0, end: 0 });
 
@@ -94,7 +96,33 @@ export function useEntryEditor(orgId: string, entryId: string) {
     setAssetUrl(null);
   }
 
-  async function handlePickAsset() {
+  function handlePickAsset() {
+    const options = ['Choose from library', 'Upload new image', 'Cancel'];
+    const cancelIndex = 2;
+
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        { options, cancelButtonIndex: cancelIndex },
+        i => {
+          if (i === 0) setShowMediaPicker(true);
+          else if (i === 1) uploadFromDevice();
+        },
+      );
+    } else {
+      Alert.alert('Set image', undefined, [
+        { text: 'Choose from library', onPress: () => setShowMediaPicker(true) },
+        { text: 'Upload new image', onPress: uploadFromDevice },
+        { text: 'Cancel', style: 'cancel' },
+      ]);
+    }
+  }
+
+  function handleSelectFromLibrary(url: string) {
+    setAssetUrl(url);
+    setShowMediaPicker(false);
+  }
+
+  async function uploadFromDevice() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       quality: 0.8,
@@ -281,7 +309,8 @@ export function useEntryEditor(orgId: string, entryId: string) {
     searchCategories, searchTags,
     selectCategory, clearCategory,
     toggleTag, removeTag,
-    handlePickAsset, clearAsset,
+    showMediaPicker, closeMediaPicker: () => setShowMediaPicker(false),
+    handlePickAsset, handleSelectFromLibrary, clearAsset,
     handleSaveDraft, handlePublish, handleUnpublish, handleDelete, goBack,
   };
 }

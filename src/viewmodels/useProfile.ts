@@ -87,6 +87,7 @@ export function useProfile() {
 
   return {
     profile,
+    avatarUrl: profile?.avatarUrl ?? null,
     loading,
     isAdmin,
     initials,

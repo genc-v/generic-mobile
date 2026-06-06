@@ -109,7 +109,7 @@ export const assetService = {
     // service forwards it to the organisation service for access verification.
     await authService.checkAndRefreshJwt();
     const jwtToken = await SecureStore.getItemAsync(SECURE_STORE_KEYS.JWT_TOKEN);
-    const endpoint = `${ASSET_BASE_URL}/organisations/${orgId}/upload`;
+    const endpoint = `${ASSET_BASE_URL}/organisations/${orgId}/assets`;
 
     let result;
     try {
@@ -148,22 +148,31 @@ export const assetService = {
   },
 
   /**
-   * Lists assets for an organisation. Pass `entryId` to scope to a single
-   * entry, or omit it for the whole media library.
+   * Lists assets for an organisation with pagination.
+   * Pass `entryId` to scope to a single entry, or omit for the whole media library.
    */
-  async list(orgId: string, entryId?: string): Promise<AssetItem[]> {
-    const qs = entryId ? `?entryId=${encodeURIComponent(entryId)}` : '';
-    const result = await assetRequest<any>(`/organisations/${orgId}/assets${qs}`);
-    const arr = Array.isArray(result)
+  async list(
+    orgId: string,
+    page = 1,
+    limit = 20,
+    entryId?: string,
+  ): Promise<{ items: AssetItem[]; hasMore: boolean; total: number }> {
+    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (entryId) params.set('entryId', entryId);
+    const result = await assetRequest<any>(`/organisations/${orgId}/assets?${params}`);
+    const arr: any[] = Array.isArray(result)
       ? result
-      : Array.isArray(result?.items)
-        ? result.items
-        : Array.isArray(result?.assets)
-          ? result.assets
-          : Array.isArray(result?.data)
-            ? result.data
+      : Array.isArray(result?.data)
+        ? result.data
+        : Array.isArray(result?.items)
+          ? result.items
+          : Array.isArray(result?.assets)
+            ? result.assets
             : [];
-    return arr.map(toAssetItem).filter((a: AssetItem) => a.key);
+    const total: number = result?.total ?? result?.totalCount ?? arr.length;
+    const totalPages: number = result?.totalPages ?? Math.ceil(total / limit);
+    const items = arr.map(toAssetItem).filter((a: AssetItem) => a.key);
+    return { items, hasMore: page < totalPages, total };
   },
 
   /** Fetches metadata for a single asset by its storage key. */

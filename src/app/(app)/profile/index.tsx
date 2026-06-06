@@ -1,4 +1,5 @@
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { TopBar } from '../../../components/layout/top-bar';
@@ -40,6 +41,10 @@ export default function ProfileScreen() {
         <View style={styles.avatarWrap}>
           {vm.loading ? (
             <Skeleton width={80} height={80} radius={40} />
+          ) : vm.avatarUrl ? (
+            <View style={styles.avatar}>
+              <Image source={{ uri: vm.avatarUrl }} style={{ width: 80, height: 80, borderRadius: 40 }} contentFit="cover" />
+            </View>
           ) : (
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>{vm.initials()}</Text>

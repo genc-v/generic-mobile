@@ -30,7 +30,7 @@ export const styles = StyleSheet.create({
   summaryCount: {
     fontSize: 12,
     fontWeight: '600',
-    color: DS.accent,
+    color: DS.text2,
   },
   actions: {
     flexDirection: 'row',
@@ -46,8 +46,8 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   actionPillPrimary: {
-    backgroundColor: DS.accentDim,
-    borderColor: DS.accentBorder,
+    backgroundColor: DS.surface3,
+    borderColor: DS.border2,
   },
   actionPillMuted: {
     backgroundColor: DS.surface2,
@@ -59,7 +59,7 @@ export const styles = StyleSheet.create({
     letterSpacing: -0.1,
   },
   actionPillTextPrimary: {
-    color: DS.accent,
+    color: DS.text1,
   },
   actionPillTextMuted: {
     color: DS.text2,
@@ -92,8 +92,8 @@ export const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   cardUnread: {
-    backgroundColor: 'rgba(139,92,246,0.06)',
-    borderColor: DS.accentBorder,
+    backgroundColor: DS.surface3,
+    borderColor: DS.border2,
   },
   cardAccent: {
     position: 'absolute',
@@ -101,7 +101,7 @@ export const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: 3,
-    backgroundColor: DS.accentStrong,
+    backgroundColor: DS.text1,
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
   },
@@ -115,15 +115,12 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
   },
   iconBoxUnread: {
-    backgroundColor: DS.accentDim,
-    borderColor: DS.accentBorder,
-  },
-  iconBoxRead: {
-    backgroundColor: DS.surface3,
+    backgroundColor: DS.surface2,
     borderColor: DS.border2,
   },
-  iconText: {
-    fontSize: 15,
+  iconBoxRead: {
+    backgroundColor: DS.surface2,
+    borderColor: DS.border,
   },
   body: {
     flex: 1,
@@ -140,14 +137,14 @@ export const styles = StyleSheet.create({
     paddingVertical: 2,
     paddingHorizontal: 7,
     borderRadius: 4,
-    backgroundColor: DS.accentDim,
+    backgroundColor: DS.surface2,
     borderWidth: 1,
-    borderColor: DS.accentBorder,
+    borderColor: DS.border2,
   },
   newBadgeText: {
     fontSize: 9,
     fontWeight: '700',
-    color: DS.accent,
+    color: DS.text1,
     letterSpacing: 0.4,
     textTransform: 'uppercase',
   },
@@ -197,9 +194,6 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 4,
   },
-  emptyIcon: {
-    fontSize: 24,
-  },
   emptyTitle: {
     fontSize: 16,
     fontWeight: '600',
@@ -245,13 +239,13 @@ export const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
-    backgroundColor: DS.accentDim,
+    backgroundColor: DS.surface3,
     borderWidth: 1,
-    borderColor: DS.accentBorder,
+    borderColor: DS.border2,
   },
   retryText: {
     fontSize: 13,
     fontWeight: '600',
-    color: DS.accent,
+    color: DS.text1,
   },
 });

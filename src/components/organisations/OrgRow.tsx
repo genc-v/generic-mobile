@@ -4,7 +4,7 @@ import { styles } from '../../styles/app/organisations.styles';
 import { DS } from '../../constants/ds';
 
 const ROLE_COLOR: Record<string, string> = {
-  Admin: DS.accent,
+  Admin: DS.text2,
   Editor: '#22C55E',
   Viewer: DS.text3,
 };

@@ -83,8 +83,8 @@ export const styles = StyleSheet.create({
     marginBottom: 8,
   },
   rowSelected: {
-    borderColor: DS.accentBorder,
-    backgroundColor: DS.accentDim,
+    borderColor: DS.border2,
+    backgroundColor: DS.surface3,
   },
   rowAvatar: {
     width: 38,
@@ -109,8 +109,8 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   checkboxOn: {
-    backgroundColor: DS.accent,
-    borderColor: DS.accent,
+    backgroundColor: DS.text1,
+    borderColor: DS.text1,
   },
   checkboxTick: { color: '#0A0A0A', fontSize: 13, fontWeight: '800' },
 
@@ -118,11 +118,11 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
-    backgroundColor: DS.accentDim,
+    backgroundColor: DS.surface3,
     borderWidth: 1,
-    borderColor: DS.accentBorder,
+    borderColor: DS.border2,
   },
-  badgeText: { fontSize: 11, fontWeight: '600', color: DS.accent },
+  badgeText: { fontSize: 11, fontWeight: '600', color: DS.text2 },
 
   // ---- Infinite scroll footer ----
   loadingMore: { paddingVertical: 16, alignItems: 'center' },
@@ -155,7 +155,7 @@ export const styles = StyleSheet.create({
     height: 50,
     paddingHorizontal: 18,
     borderRadius: 25,
-    backgroundColor: DS.accent,
+    backgroundColor: DS.text1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
@@ -206,11 +206,11 @@ export const styles = StyleSheet.create({
     backgroundColor: DS.bg,
   },
   chipOn: {
-    backgroundColor: DS.accentDim,
-    borderColor: DS.accentBorder,
+    backgroundColor: DS.surface3,
+    borderColor: DS.border2,
   },
   chipText: { fontSize: 13, color: DS.text2, fontWeight: '500' },
-  chipTextOn: { color: DS.accent },
+  chipTextOn: { color: DS.text1 },
   chipSpinner: { width: 12, height: 12 },
 
   // ---- Destructive ----

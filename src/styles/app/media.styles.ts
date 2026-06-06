@@ -1,16 +1,9 @@
 import { StyleSheet } from 'react-native';
 import { DS } from '../../constants/ds';
 
-const GRID_GAP = 10;
-
 export const styles = StyleSheet.create({
   // ── Screen 15 — Media Library grid ──────────────────────────────────────
   scroll: { padding: 16, paddingTop: 12, paddingBottom: 120 },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: GRID_GAP,
-  },
   card: {
     // 3 columns: (100% - 2 gaps) / 3. Width is resolved at runtime via cardWidth.
     backgroundColor: DS.surface2,
