@@ -25,13 +25,14 @@ jobs:
         run: npm ci
 
       - name: Build APK via EAS
-        id: eas
         run: |
-          npx eas-cli build \
+          BUILD_URL=$(npx eas-cli build \
             --platform android \
             --profile preview \
             --non-interactive \
-            --output ./app-release.apk
+            --json \
+            2>/dev/null | jq -r '.[0].artifacts.buildUrl')
+          curl -fL -o app-release.apk "$BUILD_URL"
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
