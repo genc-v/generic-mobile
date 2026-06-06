@@ -65,6 +65,7 @@ export default function EntryEditor() {
   const { canEdit } = useOrgSettings(orgId);
   const insets = useSafeAreaInsets();
   const [showPreview, setShowPreview] = useState(false);
+  const [authorExpanded, setAuthorExpanded] = useState(false);
 
   const status = vm.entry?.status ?? 'New';
   const statusColor = STATUS_COLOR[status] ?? DS.text3;
@@ -256,6 +257,63 @@ export default function EntryEditor() {
               </View>
             )}
 
+            {vm.authorProfile !== null && (
+              <View style={{ borderBottomWidth: 1, borderBottomColor: DS.border }}>
+                <TouchableOpacity
+                  style={[styles.propRow, { borderBottomWidth: 0 }]}
+                  onPress={() => setAuthorExpanded(v => !v)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.propLabel}>Author</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7 }}>
+                    {vm.authorProfile.avatarUrl ? (
+                      <Image
+                        source={{ uri: vm.authorProfile.avatarUrl }}
+                        style={{ width: 22, height: 22, borderRadius: 11 }}
+                      />
+                    ) : (
+                      <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: DS.surface2, borderWidth: 1, borderColor: DS.border }} />
+                    )}
+                    <Text style={styles.propValue}>
+                      {vm.authorProfile.displayName ?? '—'}
+                    </Text>
+                    <Svg width={10} height={10} viewBox="0 0 10 10" fill="none" style={{ transform: [{ rotate: authorExpanded ? '180deg' : '0deg' }] }}>
+                      <Path d="M2 3.5L5 6.5L8 3.5" stroke={DS.text3} strokeWidth={1.3} strokeLinecap="round" strokeLinejoin="round" />
+                    </Svg>
+                  </View>
+                </TouchableOpacity>
+                {authorExpanded && (
+                  <View style={{ paddingHorizontal: 0, paddingBottom: 12, gap: 8 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                      {vm.authorProfile.avatarUrl ? (
+                        <Image
+                          source={{ uri: vm.authorProfile.avatarUrl }}
+                          style={{ width: 44, height: 44, borderRadius: 22 }}
+                        />
+                      ) : (
+                        <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: DS.surface2, borderWidth: 1, borderColor: DS.border }} />
+                      )}
+                      <View style={{ gap: 2 }}>
+                        <Text style={[styles.propValue, { fontWeight: '600' }]}>
+                          {vm.authorProfile.displayName ?? '—'}
+                        </Text>
+                        <Text style={{ fontSize: 11, color: DS.text3, fontVariant: ['tabular-nums'] }} numberOfLines={1}>
+                          {vm.authorProfile.userId}
+                        </Text>
+                      </View>
+                    </View>
+                    {vm.authorProfile.bio ? (
+                      <Text style={{ fontSize: 13, color: DS.text2, lineHeight: 19 }}>
+                        {vm.authorProfile.bio}
+                      </Text>
+                    ) : (
+                      <Text style={{ fontSize: 13, color: DS.text3 }}>No bio.</Text>
+                    )}
+                  </View>
+                )}
+              </View>
+            )}
+
             <View style={[styles.propRow, { borderBottomWidth: 0 }]}>
               <Text style={styles.propLabel}>Content ID</Text>
               <Text style={[styles.propValue, { fontVariant: ['tabular-nums'] }]} numberOfLines={1}>
@@ -309,10 +367,9 @@ export default function EntryEditor() {
             </View>
           )}
 
-          {canEdit && (vm.error || vm.saveSuccess) && (
+          {canEdit && vm.saveSuccess && (
             <View style={styles.feedback}>
-              {vm.error && <Text style={styles.errorText}>{vm.error}</Text>}
-              {vm.saveSuccess && <Text style={styles.successText}>Saved.</Text>}
+              <Text style={styles.successText}>Saved.</Text>
             </View>
           )}
         </ScrollView>

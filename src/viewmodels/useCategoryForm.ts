@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { contentService } from '../services/content.service';
 import { confirm } from '../utils/confirm';
+import { toast } from '../utils/toast';
 import { CategoryDetail } from '../types/content.types';
 
 type Args = {
@@ -44,8 +45,8 @@ export function useCategoryForm({ visible, orgId, editing, onSaved, onDeleted }:
         });
         onSaved(false, { ...editing!, name: name.trim(), description: description.trim() || null });
       }
-    } catch {
-      setError('Failed to save. Please try again.');
+    } catch (e: any) {
+      toast.error(e?.message ?? 'Failed to save category.');
     } finally {
       setSaving(false);
     }
@@ -64,8 +65,8 @@ export function useCategoryForm({ visible, orgId, editing, onSaved, onDeleted }:
     try {
       await contentService.deleteCategory(orgId, editing.categoryId);
       onDeleted(editing.categoryId);
-    } catch {
-      setError('Failed to delete. Please try again.');
+    } catch (e: any) {
+      toast.error(e?.message ?? 'Failed to delete category.');
     } finally {
       setDeleting(false);
     }

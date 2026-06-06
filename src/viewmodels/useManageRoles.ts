@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { userManagementService } from '../services/user-management.service';
 import { confirm } from '../utils/confirm';
+import { toast } from '../utils/toast';
 import { Role } from '../types/user-management.types';
 
 export function useManageRoles() {
@@ -16,15 +17,16 @@ export function useManageRoles() {
   const [description, setDescription] = useState('');
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [sheetError, setSheetError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       setRoles(await userManagementService.listRoles());
-    } catch {
-      setError('Failed to load roles.');
+    } catch (e: any) {
+      const msg = e?.message ?? 'Failed to load roles.';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -53,9 +55,8 @@ export function useManageRoles() {
   }
 
   async function save() {
-    if (!name.trim()) { setSheetError('A role name is required.'); return; }
+    if (!name.trim()) { toast.info('A role name is required.'); return; }
     setSaving(true);
-    setSheetError(null);
     try {
       const body = { name: name.trim(), description: description.trim() || null };
       if (editing) {
@@ -65,8 +66,8 @@ export function useManageRoles() {
       }
       setSheetOpen(false);
       await load();
-    } catch {
-      setSheetError('Failed to save the role.');
+    } catch (e: any) {
+      toast.error(e?.message ?? 'Failed to save the role.');
     } finally {
       setSaving(false);
     }
@@ -83,13 +84,12 @@ export function useManageRoles() {
     if (!ok) return;
 
     setDeleting(true);
-    setSheetError(null);
     try {
       await userManagementService.deleteRole(editing.id);
       setSheetOpen(false);
       await load();
-    } catch {
-      setSheetError('Failed to delete the role.');
+    } catch (e: any) {
+      toast.error(e?.message ?? 'Failed to delete the role.');
     } finally {
       setDeleting(false);
     }
@@ -99,6 +99,6 @@ export function useManageRoles() {
     roles, loading, error, refresh: load,
     sheetOpen, editing, openCreate, openEdit, closeSheet,
     name, setName, description, setDescription,
-    saving, save, deleting, remove, sheetError,
+    saving, save, deleting, remove,
   };
 }

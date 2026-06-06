@@ -4,9 +4,9 @@ import {
   fetchNotifications,
   markAllNotificationsRead,
   markNotificationRead,
-  startNotificationHub,
-  stopNotificationHub,
 } from '../services/notification.service';
+import { notificationHub } from '../utils/notification-hub';
+import { toast } from '../utils/toast';
 import { countUnreadNotifications } from './useNotificationUnreadCount';
 
 function mergeNotification(
@@ -57,7 +57,9 @@ export function useNotifications() {
       setHasMore(result.hasMore);
       pageRef.current = 1;
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to load notifications.');
+      const msg = e instanceof Error ? e.message : 'Failed to load notifications.';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -86,22 +88,15 @@ export function useNotifications() {
   useEffect(() => {
     load();
 
-    let active = true;
+    setHubConnected(notificationHub.isRunning);
 
-    startNotificationHub(notification => {
-      if (!active) return;
+    const unsub = notificationHub.subscribe(notification => {
       setNotifications(prev => mergeNotification(prev, notification));
-    })
-      .then(() => {
-        if (active) setHubConnected(true);
-      })
-      .catch(() => {
-        if (active) setHubConnected(false);
-      });
+      setHubConnected(true);
+    });
 
     return () => {
-      active = false;
-      stopNotificationHub();
+      unsub();
     };
   }, [load]);
 

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import * as Clipboard from 'expo-clipboard';
 import { organisationService } from '../services/organisation.service';
 import { confirm } from '../utils/confirm';
+import { toast } from '../utils/toast';
 import { ApiKey } from '../types/organisation.types';
 
 export type ExpiryOption = 'none' | '30d' | '90d' | '1y';
@@ -78,8 +79,8 @@ export function useApiKeys(orgId: string) {
     try {
       await organisationService.toggleApiKey(orgId, keyId);
       setKeys(prev => prev.map(k => k.id === keyId ? { ...k, isActive: !k.isActive } : k));
-    } catch {
-      setError('Failed to toggle key.');
+    } catch (e: any) {
+      toast.error(e?.message ?? 'Failed to toggle key.');
     } finally {
       setTogglingId(null);
     }
@@ -97,8 +98,8 @@ export function useApiKeys(orgId: string) {
     try {
       await organisationService.deleteApiKey(orgId, keyId);
       setKeys(prev => prev.filter(k => k.id !== keyId));
-    } catch {
-      setError('Failed to delete key.');
+    } catch (e: any) {
+      toast.error(e?.message ?? 'Failed to delete key.');
     } finally {
       setDeletingId(null);
     }

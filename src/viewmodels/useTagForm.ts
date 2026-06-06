@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { contentService } from '../services/content.service';
 import { confirm } from '../utils/confirm';
+import { toast } from '../utils/toast';
 import { TagDTO } from '../types/content.types';
 
 type Args = {
@@ -38,8 +39,8 @@ export function useTagForm({ visible, orgId, editing, onSaved, onDeleted }: Args
         await contentService.updateTag(orgId, { tagId: editing!.tagId, name: name.trim() });
         onSaved(false, editing!.tagId, name.trim());
       }
-    } catch {
-      setError('Failed to save. Please try again.');
+    } catch (e: any) {
+      toast.error(e?.message ?? 'Failed to save tag.');
     } finally {
       setSaving(false);
     }
@@ -58,8 +59,8 @@ export function useTagForm({ visible, orgId, editing, onSaved, onDeleted }: Args
     try {
       await contentService.deleteTag(orgId, editing.tagId);
       onDeleted(editing.tagId);
-    } catch {
-      setError('Failed to delete. Please try again.');
+    } catch (e: any) {
+      toast.error(e?.message ?? 'Failed to delete tag.');
     } finally {
       setDeleting(false);
     }

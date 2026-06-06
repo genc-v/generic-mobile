@@ -3,6 +3,7 @@ import { ActionSheetIOS, Alert, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { profileService } from '../services/profile.service';
 import { cache, CACHE_KEYS } from '../utils/cache';
+import { toast } from '../utils/toast';
 import { Profile } from '../types/profile.types';
 
 export function useAccountSettings() {
@@ -11,7 +12,6 @@ export function useAccountSettings() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const [displayName, setDisplayName] = useState(cached?.displayName ?? '');
   const [firstName, setFirstName] = useState(cached?.firstName ?? '');
@@ -46,7 +46,7 @@ export function useAccountSettings() {
         populate(p);
         cache.set(CACHE_KEYS.profile, p);
       })
-      .catch(() => { if (active) setError('Failed to load profile.'); })
+      .catch(() => { if (active) toast.error('Failed to load profile.'); })
       .finally(() => { if (active) setFetching(false); });
 
     return () => { active = false; };
@@ -63,7 +63,6 @@ export function useAccountSettings() {
 
     const asset = result.assets[0];
     setUploading(true);
-    setError(null);
     try {
       const url = await profileService.uploadAvatar({
         uri: asset.uri,
@@ -75,7 +74,7 @@ export function useAccountSettings() {
       const prev = cache.getSync<Profile>(CACHE_KEYS.profile);
       if (prev) cache.set(CACHE_KEYS.profile, { ...prev, avatarUrl: url });
     } catch {
-      setError('Failed to upload photo.');
+      toast.error('Failed to upload photo.');
     } finally {
       setUploading(false);
     }
@@ -88,7 +87,7 @@ export function useAccountSettings() {
       const prev = cache.getSync<Profile>(CACHE_KEYS.profile);
       if (prev) cache.set(CACHE_KEYS.profile, { ...prev, avatarUrl: null });
     } catch {
-      setError('Failed to remove photo.');
+      toast.error('Failed to remove photo.');
     }
   }
 
@@ -118,7 +117,6 @@ export function useAccountSettings() {
 
   async function handleSave() {
     setSaving(true);
-    setError(null);
     setSuccess(false);
     try {
       await profileService.update({ displayName, firstName, lastName, bio, phoneNumber, timezone, avatarUrl: avatarUrl ?? '' });
@@ -126,15 +124,15 @@ export function useAccountSettings() {
       if (prev) cache.set(CACHE_KEYS.profile, { ...prev, displayName, firstName, lastName, bio, phoneNumber, timezone, avatarUrl });
       setSuccess(true);
       setTimeout(() => setSuccess(false), 2500);
-    } catch {
-      setError('Failed to save changes. Please try again.');
+    } catch (e: any) {
+      toast.error(e?.message ?? 'Failed to save changes.');
     } finally {
       setSaving(false);
     }
   }
 
   return {
-    fetching, saving, uploading, success, error,
+    fetching, saving, uploading, success,
     avatarUrl,
     displayName, setDisplayName,
     firstName, setFirstName,

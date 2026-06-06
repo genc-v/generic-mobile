@@ -52,7 +52,6 @@ export default function AccountSettingsScreen() {
             <Input label="Bio" placeholder="A short bio" value={vm.bio} onChangeText={vm.setBio} />
             <Input label="Phone number" placeholder="+1 555 000 0000" value={vm.phoneNumber} onChangeText={vm.setPhoneNumber} />
             <Input label="Timezone" placeholder="e.g. Europe/London" value={vm.timezone} onChangeText={vm.setTimezone} />
-            {vm.error && <Text style={styles.error}>{vm.error}</Text>}
             {vm.success && <Text style={styles.successMsg}>Changes saved.</Text>}
             <View style={styles.btnWrap}>
               <PrimaryBtn label="Save Changes" full onPress={vm.handleSave} loading={vm.saving} />

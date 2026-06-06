@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { contentService } from '../services/content.service';
+import { toast } from '../utils/toast';
 import { ContentDTO } from '../types/content.types';
 
 export type StatusFilter = 'All' | 'New' | 'Draft' | 'Published' | 'Unpublished';
@@ -52,7 +53,9 @@ export function useContentList(orgId: string) {
       setEntries(data);
       hasLoaded.current = true;
     } catch (e: any) {
-      setError(e?.message ?? 'Failed to load entries.');
+      const msg = e?.message ?? 'Failed to load entries.';
+      setError(msg);
+      toast.error(msg);
     } finally {
       if (!silent) setLoading(false);
     }
