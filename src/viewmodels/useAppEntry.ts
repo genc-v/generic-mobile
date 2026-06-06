@@ -15,9 +15,9 @@ export function useAppEntry() {
       try {
         await authService.setup();
         const jwt = await SecureStore.getItemAsync(SECURE_STORE_KEYS.JWT_TOKEN);
-        router.replace(jwt ? '/(app)' : '/(auth)');
+        router.replace(jwt ? '/(app)' : '/(auth)/login');
       } catch {
-        router.replace('/(auth)');
+        router.replace('/(auth)/login');
       } finally {
         await SplashScreen.hideAsync();
       }

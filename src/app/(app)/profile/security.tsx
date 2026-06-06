@@ -123,7 +123,6 @@ export default function SecurityScreen() {
                 <View style={styles.divider} />
                 <Input label="Current password" placeholder="Required to save changes" value={vm.currentPassword} onChangeText={vm.setCurrentPassword} secureTextEntry />
                 <Input label="New password" placeholder="Leave blank to keep current" value={vm.newPassword} onChangeText={vm.setNewPassword} secureTextEntry />
-                {vm.saveError && <Text style={styles.errorText}>{vm.saveError}</Text>}
                 {vm.saveSuccess && <Text style={styles.successText}>Changes saved.</Text>}
                 <PrimaryBtn label="Save Changes" full onPress={vm.handleSaveAccount} loading={vm.saving} />
               </>

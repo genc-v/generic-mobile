@@ -91,7 +91,6 @@ export default function ManageRolesScreen() {
                   </>
                 )}
 
-                {vm.sheetError && <Text style={[styles.errorText, { marginTop: 12 }]}>{vm.sheetError}</Text>}
               </ScrollView>
             </Pressable>
           </KeyboardAvoidingView>

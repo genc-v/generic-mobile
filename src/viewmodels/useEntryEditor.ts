@@ -4,8 +4,11 @@ import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { contentService } from '../services/content.service';
 import { assetService } from '../services/asset.service';
+import { orgMembersService } from '../services/org-members.service';
 import { confirm } from '../utils/confirm';
+import { toast } from '../utils/toast';
 import { ContentDTO, TagDTO } from '../types/content.types';
+import { UserPublicProfile } from '../types/org-members.types';
 
 const AUTOSAVE_DELAY = 1000;
 
@@ -17,7 +20,6 @@ export function useEntryEditor(orgId: string, entryId: string) {
   const [autosaving, setAutosaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [unpublishing, setUnpublishing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   // Signature of the last persisted state — lets autosave skip the initial
@@ -38,6 +40,7 @@ export function useEntryEditor(orgId: string, entryId: string) {
 
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [showTagPicker, setShowTagPicker] = useState(false);
+  const [authorProfile, setAuthorProfile] = useState<UserPublicProfile | null>(null);
 
   useEffect(() => {
     contentService.getEntry(orgId, entryId)
@@ -52,8 +55,13 @@ export function useEntryEditor(orgId: string, entryId: string) {
         lastSavedSig.current = sigOf(
           data.title ?? '', data.richContent ?? '', data.categoryId, data.assetUrl, data.tags ?? [],
         );
+        if (data.userId) {
+          orgMembersService.getProfiles([data.userId])
+            .then(profiles => setAuthorProfile(profiles[0] ?? null))
+            .catch(() => {});
+        }
       })
-      .catch(() => setError('Failed to load entry.'))
+      .catch(() => toast.error('Failed to load entry.'))
       .finally(() => setLoading(false));
   }, [orgId, entryId]);
 
@@ -134,12 +142,11 @@ export function useEntryEditor(orgId: string, entryId: string) {
     const type = asset.mimeType ?? 'image/jpeg';
 
     setUploading(true);
-    setError(null);
     try {
       const uploaded = await assetService.upload(orgId, entryId, { uri: asset.uri, name, type });
       setAssetUrl(uploaded.url);
     } catch (e: any) {
-      setError(e?.message ?? 'Failed to upload asset.');
+      toast.error(e?.message ?? 'Failed to upload the image.');
     } finally {
       setUploading(false);
     }
@@ -215,7 +222,6 @@ export function useEntryEditor(orgId: string, entryId: string) {
   async function persist(silent: boolean) {
     const sig = currentSig();
     if (silent) setAutosaving(true); else { setSaving(true); setSaveSuccess(false); }
-    setError(null);
     try {
       await contentService.saveEntry(orgId, entryId, buildPayload());
       lastSavedSig.current = sig;
@@ -229,8 +235,8 @@ export function useEntryEditor(orgId: string, entryId: string) {
         setSaveSuccess(true);
         setTimeout(() => setSaveSuccess(false), 2000);
       }
-    } catch {
-      setError('Failed to save entry.');
+    } catch (e: any) {
+      toast.error(e?.message ?? 'Failed to save entry.');
     } finally {
       if (silent) setAutosaving(false); else setSaving(false);
     }
@@ -248,12 +254,11 @@ export function useEntryEditor(orgId: string, entryId: string) {
 
   async function handleUnpublish() {
     setUnpublishing(true);
-    setError(null);
     try {
       await contentService.unpublish(orgId, entryId);
       setEntry(prev => prev ? { ...prev, status: 'Unpublished' } : prev);
-    } catch {
-      setError('Failed to unpublish entry.');
+    } catch (e: any) {
+      toast.error(e?.message ?? 'Failed to unpublish entry.');
     } finally {
       setUnpublishing(false);
     }
@@ -268,12 +273,11 @@ export function useEntryEditor(orgId: string, entryId: string) {
     });
     if (!ok) return;
     setDeleting(true);
-    setError(null);
     try {
       await contentService.deleteEntry(orgId, entryId);
       router.back();
-    } catch {
-      setError('Failed to delete entry.');
+    } catch (e: any) {
+      toast.error(e?.message ?? 'Failed to delete entry.');
       setDeleting(false);
     }
   }
@@ -293,7 +297,8 @@ export function useEntryEditor(orgId: string, entryId: string) {
   const canPublish = missingForPublish.length === 0;
 
   return {
-    entry, loading, saving, autosaving, deleting, unpublishing, uploading, error, saveSuccess,
+    entry, loading, saving, autosaving, deleting, unpublishing, uploading, saveSuccess,
+    authorProfile,
     title, setTitle,
     richContent, setRichContent,
     selection, setSelection,

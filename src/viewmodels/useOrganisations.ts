@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { organisationService } from '../services/organisation.service';
 import { profileService } from '../services/profile.service';
+import { toast } from '../utils/toast';
 import { useNotificationUnreadCount } from './useNotificationUnreadCount';
 import { Organisation } from '../types/organisation.types';
 import { Profile } from '../types/profile.types';
@@ -42,8 +43,10 @@ export function useOrganisations() {
       currentPage.current = result.pageNumber;
       setOrgs(prev => replace ? result.items : [...prev, ...result.items]);
       hasLoaded.current = true;
-    } catch {
-      setError('Failed to load organisations.');
+    } catch (e: any) {
+      const msg = e?.message ?? 'Failed to load organisations.';
+      setError(msg);
+      toast.error(msg);
     }
   }, []);
 
