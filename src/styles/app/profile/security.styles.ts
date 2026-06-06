@@ -65,14 +65,14 @@ export const styles = StyleSheet.create({
   infoText: { fontSize: 12, color: DS.text2, lineHeight: 18 },
 
   enableBtn: {
-    backgroundColor: DS.accentDim,
+    backgroundColor: DS.surface3,
     borderWidth: 1,
-    borderColor: DS.accentBorder,
+    borderColor: DS.border2,
     borderRadius: 8,
     padding: 13,
     alignItems: 'center',
   },
-  enableBtnLabel: { fontSize: 14, fontWeight: '500', color: DS.accent },
+  enableBtnLabel: { fontSize: 14, fontWeight: '500', color: DS.text1 },
   disableBtn: {
     backgroundColor: 'rgba(239,68,68,0.06)',
     borderWidth: 1,

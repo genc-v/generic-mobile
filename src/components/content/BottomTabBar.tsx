@@ -5,11 +5,12 @@ import { DS } from '../../constants/ds';
 
 export type ContentTab = 'Content' | 'Categories' | 'Tags' | 'Media' | 'Settings';
 
-const TABS: ContentTab[] = ['Content', 'Categories', 'Tags', 'Media', 'Settings'];
+const ALL_TABS: ContentTab[] = ['Content', 'Categories', 'Tags', 'Media', 'Settings'];
 
 type Props = {
   active: ContentTab;
   onPress: (tab: ContentTab) => void;
+  showSettings?: boolean;
 };
 
 function TabIcon({ name, color }: { name: ContentTab; color: string }) {
@@ -30,12 +31,13 @@ function TabIcon({ name, color }: { name: ContentTab; color: string }) {
   }
 }
 
-export function BottomTabBar({ active, onPress }: Props) {
+export function BottomTabBar({ active, onPress, showSettings = true }: Props) {
   const insets = useSafeAreaInsets();
+  const tabs = showSettings ? ALL_TABS : ALL_TABS.filter(t => t !== 'Settings');
 
   return (
     <View style={[styles.bar, { paddingBottom: insets.bottom + 8 }]}>
-      {TABS.map(tab => {
+      {tabs.map(tab => {
         const isActive = tab === active;
         const color = isActive ? DS.text1 : DS.text4;
         return (

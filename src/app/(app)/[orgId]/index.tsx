@@ -15,7 +15,6 @@ import { ContentFiltersSheet } from '../../../components/content/ContentFiltersS
 import { BottomTabBar, ContentTab } from '../../../components/content/BottomTabBar';
 import { MediaGrid } from '../../../components/media/MediaGrid';
 import { AssetDetailSheet } from '../../../components/media/AssetDetailSheet';
-import { UploadIcon } from '../../../components/media/MediaIcons';
 import { ListSkeleton, SimpleListSkeleton, ChipSkeleton, GridSkeleton } from '../../../components/ui/skeletons';
 import { useContentList, StatusFilter } from '../../../viewmodels/useContentList';
 import { useOrgSettings } from '../../../viewmodels/useOrgSettings';
@@ -56,21 +55,7 @@ export default function OrgDashboard() {
     <SafeAreaView style={styles.safe} edges={['top']}>
       <StatusBar style="light" />
 
-      <TopBar
-        title={activeTab}
-        right={activeTab === 'Media' && canEdit ? (
-          <TouchableOpacity
-            style={mediaStyles.uploadBtn}
-            onPress={mediaVm.handleUpload}
-            disabled={mediaVm.uploading}
-            activeOpacity={0.8}
-          >
-            {mediaVm.uploading
-              ? <ActivityIndicator size="small" color={DS.accent} />
-              : <UploadIcon />}
-          </TouchableOpacity>
-        ) : undefined}
-      />
+      <TopBar title={activeTab} />
 
       {activeTab === 'Content' && (
         <>
@@ -336,7 +321,12 @@ export default function OrgDashboard() {
               </Text>
             </View>
           ) : (
-            <MediaGrid assets={mediaVm.assets} onPress={mediaVm.openDetail} />
+            <MediaGrid
+              assets={mediaVm.assets}
+              onPress={mediaVm.openDetail}
+              onEndReached={mediaVm.loadMore}
+              loadingMore={mediaVm.loadingMore}
+            />
           )}
 
           <AssetDetailSheet
@@ -354,7 +344,7 @@ export default function OrgDashboard() {
         </>
       )}
 
-      <BottomTabBar active={activeTab} onPress={handleTabPress} />
+      <BottomTabBar active={activeTab} onPress={handleTabPress} showSettings={settingsVm.canManageOrg} />
     </SafeAreaView>
   );
 }

@@ -53,13 +53,11 @@ export function useSecurity() {
   }, []);
 
   async function handleSaveAccount() {
-    if (!currentPassword) { setSaveError('Current password is required to save changes.'); return; }
     setSaveError(null);
     setSaveSuccess(false);
     setSaving(true);
     try {
-      const body: Record<string, string> = { email, username, currentPassword };
-      if (newPassword) body.newPassword = newPassword;
+      const body: Record<string, string> = { email, username, currentPassword: currentPassword || '', newPassword: newPassword || '' };
       const result = await authService.updateAccount(body);
       if (result.success) {
         cache.set(CACHE_KEYS.account, { email, username, hasTwoFactorAuth: twoFaEnabled });

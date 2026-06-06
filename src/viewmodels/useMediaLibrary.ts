@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import * as Clipboard from 'expo-clipboard';
 import * as ImagePicker from 'expo-image-picker';
 import { assetService } from '../services/asset.service';
@@ -8,9 +8,9 @@ import { AssetItem } from '../types/asset.types';
 export function useMediaLibrary(orgId: string, enabled = true) {
   const [assets, setAssets] = useState<AssetItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [hasLoaded, setHasLoaded] = useState(false);
-
   const [selected, setSelected] = useState<AssetItem | null>(null);
   const [showDetail, setShowDetail] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
@@ -19,25 +19,47 @@ export function useMediaLibrary(orgId: string, enabled = true) {
   const [deleting, setDeleting] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  const pageRef = useRef(1);
+
   const fetchAssets = useCallback(async () => {
     setLoading(true);
     setError(null);
+    pageRef.current = 1;
     try {
-      const data = await assetService.list(orgId);
-      setAssets(data);
+      const result = await assetService.list(orgId, 1);
+      setAssets(result.items);
+      setHasMore(result.hasMore);
     } catch (e: any) {
       console.error('[media.list] failed', e);
       setError(e?.message ?? 'Failed to load media.');
     } finally {
       setLoading(false);
-      setHasLoaded(true);
     }
   }, [orgId]);
 
-  // Lazily load the first time the Media tab becomes active.
+  const loadMore = useCallback(async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    try {
+      const nextPage = pageRef.current + 1;
+      const result = await assetService.list(orgId, nextPage);
+      setAssets(prev => {
+        const existingKeys = new Set(prev.map(a => a.key));
+        const fresh = result.items.filter(a => !existingKeys.has(a.key));
+        return [...prev, ...fresh];
+      });
+      setHasMore(result.hasMore);
+      pageRef.current = nextPage;
+    } catch (e: any) {
+      console.error('[media.loadMore] failed', e);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [orgId, loadingMore, hasMore]);
+
   useEffect(() => {
-    if (enabled && !hasLoaded) fetchAssets();
-  }, [enabled, hasLoaded, fetchAssets]);
+    if (enabled) fetchAssets();
+  }, [enabled, fetchAssets]);
 
   async function openDetail(asset: AssetItem) {
     setSelected(asset);
@@ -45,7 +67,6 @@ export function useMediaLibrary(orgId: string, enabled = true) {
     setLoadingDetail(true);
     try {
       const detail = await assetService.getInfo(orgId, asset.key);
-      // Keep the list-derived url/name if the info call doesn't supply them.
       setSelected({ ...asset, ...detail, url: detail.url || asset.url, name: detail.name || asset.name });
     } catch {
       // Detail enrichment is best-effort; the list row already has the basics.
@@ -112,10 +133,10 @@ export function useMediaLibrary(orgId: string, enabled = true) {
   }
 
   return {
-    assets, loading, error,
+    assets, loading, loadingMore, hasMore, error,
     selected, showDetail, loadingDetail,
     uploading, deleting, copied,
-    fetchAssets,
+    fetchAssets, loadMore,
     openDetail, closeDetail,
     copyUrl, handleUpload, handleDelete,
   };

@@ -10,5 +10,10 @@ export interface NotificationItem {
 
 export interface NotificationsListResponse {
   success?: boolean;
+  items?: NotificationItem[];
   data?: NotificationItem[];
+  totalCount?: number;
+  pageNumber?: number;
+  pageSize?: number;
+  totalPages?: number;
 }

@@ -14,6 +14,7 @@ import { useSecurity } from '../../../viewmodels/useSecurity';
 import { useSetup2fa } from '../../../viewmodels/useSetup2fa';
 import { useDisable2fa } from '../../../viewmodels/useDisable2fa';
 import { styles } from '../../../styles/app/profile/security.styles';
+import { DS } from '../../../constants/ds';
 
 function SetupSheet({ visible, onClose, onEnabled }: {
   visible: boolean; onClose: () => void; onEnabled: () => void;
@@ -31,7 +32,7 @@ function SetupSheet({ visible, onClose, onEnabled }: {
             <Text style={styles.sheetSubtitle}>Scan this QR code with Google Authenticator or any TOTP app.</Text>
 
             {vm.step === 'loading' && (
-              <View style={styles.qrPlaceholder}><ActivityIndicator color="#A78BFA" /></View>
+              <View style={styles.qrPlaceholder}><ActivityIndicator color={DS.text3} /></View>
             )}
             {vm.step === 'error' && (
               <View style={styles.qrPlaceholder}><Text style={styles.errorText}>Failed to load setup data.</Text></View>
