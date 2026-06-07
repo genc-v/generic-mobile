@@ -2,7 +2,7 @@ import { View, Text, Modal, Pressable, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PrimaryBtn } from '../ui/button';
 import { ExpiryOption } from '../../viewmodels/useApiKeys';
-import { styles } from '../../styles/app/api-keys.styles';
+import { styles } from '../../styles/app/api-key-sheet.styles';
 
 const EXPIRY_OPTIONS: { label: string; value: ExpiryOption }[] = [
   { label: 'No expiry', value: 'none' },

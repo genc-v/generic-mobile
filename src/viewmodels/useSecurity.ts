@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { authService } from '../services/auth.service';
+import { accountService } from '../services/account.service';
 import { cache, CACHE_KEYS } from '../utils/cache';
 import { toast } from '../utils/toast';
 
@@ -34,7 +34,7 @@ export function useSecurity() {
       });
     }
 
-    authService.getAccount()
+    accountService.get()
       .then(res => {
         if (!active || !res.success || !res.data) return;
         setEmail(res.data.email);
@@ -57,7 +57,7 @@ export function useSecurity() {
     setSaving(true);
     try {
       const body: Record<string, string> = { email, username, currentPassword: currentPassword || '', newPassword: newPassword || '' };
-      const result = await authService.updateAccount(body);
+      const result = await accountService.update(body);
       if (result.success) {
         cache.set(CACHE_KEYS.account, { email, username, hasTwoFactorAuth: twoFaEnabled });
         setSaveSuccess(true);

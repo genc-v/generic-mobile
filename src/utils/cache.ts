@@ -39,7 +39,6 @@ export const cache = {
     try {
       await AsyncStorage.removeItem(key);
     } catch {
-      // ignore
     }
   },
 

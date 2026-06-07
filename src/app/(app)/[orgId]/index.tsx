@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, ActivityIndicator,
 } from 'react-native';
@@ -25,7 +25,7 @@ import { styles } from '../../../styles/app/content-list.styles';
 import { styles as catStyles } from '../../../styles/app/categories.styles';
 import { styles as tagStyles } from '../../../styles/app/tags.styles';
 import { styles as filterStyles } from '../../../styles/app/content-filters.styles';
-import { styles as mediaStyles } from '../../../styles/app/media.styles';
+import { styles as mediaStyles } from '../../../styles/app/media-grid.styles';
 import { DS } from '../../../constants/ds';
 
 const FILTERS: StatusFilter[] = ['All', 'New', 'Draft', 'Published', 'Unpublished'];
@@ -40,6 +40,11 @@ export default function OrgDashboard() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<ContentTab>('Content');
   const mediaVm = useMediaLibrary(orgId, activeTab === 'Media');
+
+  useEffect(() => {
+    if (activeTab === 'Categories') catVm.fetchCategories();
+    else if (activeTab === 'Tags') tagVm.fetchTags();
+  }, [activeTab]);
 
   const { canEdit } = settingsVm;
 

@@ -27,10 +27,8 @@ export function useOrgMembers(orgId: string) {
   const [hasMore, setHasMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Detail sheet
   const [detailMember, setDetailMember] = useState<OrgMemberWithProfile | null>(null);
 
-  // Add sheet
   const [addSheetVisible, setAddSheetVisible] = useState(false);
   const [addEmail, setAddEmail] = useState('');
   const [addRole, setAddRole] = useState<OrgRole>('Viewer');
@@ -41,7 +39,6 @@ export function useOrgMembers(orgId: string) {
 
   const [addLoading, setAddLoading] = useState(false);
 
-  // Role change (inside detail sheet)
   const [roleUpdating, setRoleUpdating] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
 
@@ -81,7 +78,6 @@ export function useOrgMembers(orgId: string) {
       setHasMore(page.pageNumber < page.totalPages);
       pageRef.current = nextPage;
     } catch {
-      // Non-critical.
     } finally {
       setLoadingMore(false);
     }

@@ -13,13 +13,15 @@ export function useCategoryList(orgId: string) {
   const [loadingDetail, setLoadingDetail] = useState(false);
 
   const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasData = useRef(false);
 
   const fetchCategories = useCallback(async (q?: string) => {
-    setLoading(true);
+    if (!hasData.current) setLoading(true);
     setError(null);
     try {
       const data = await contentService.listCategories(orgId, q);
       setCategories(data);
+      hasData.current = true;
     } catch {
       setError('Failed to load categories.');
     } finally {

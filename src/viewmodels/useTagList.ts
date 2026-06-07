@@ -12,13 +12,15 @@ export function useTagList(orgId: string) {
   const [editingTag, setEditingTag] = useState<TagDTO | null>(null);
 
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasData = useRef(false);
 
   const fetchTags = useCallback(async (q?: string) => {
-    setLoading(true);
+    if (!hasData.current) setLoading(true);
     setError(null);
     try {
       const data = await contentService.listTags(orgId, q);
       setTags(data);
+      hasData.current = true;
     } catch {
       setError('Failed to load tags.');
     } finally {

@@ -4,7 +4,7 @@ import Svg, { Path, Rect } from 'react-native-svg';
 import * as Clipboard from 'expo-clipboard';
 import { ApiKey } from '../../types/organisation.types';
 import { DS } from '../../constants/ds';
-import { styles } from '../../styles/app/api-keys.styles';
+import { styles } from '../../styles/app/api-key-card.styles';
 
 function formatDate(iso: string | null): string {
   if (!iso) return 'No expiry';

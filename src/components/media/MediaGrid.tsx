@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity, FlatList, useWindowDimensions, ActivityIn
 import { Image } from 'expo-image';
 import { AssetItem } from '../../types/asset.types';
 import { FileIcon } from './MediaIcons';
-import { styles } from '../../styles/app/media.styles';
+import { styles } from '../../styles/app/media-grid.styles';
 import { DS } from '../../constants/ds';
 
 type Props = {

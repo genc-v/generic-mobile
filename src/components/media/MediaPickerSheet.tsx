@@ -7,7 +7,7 @@ import { assetService } from '../../services/asset.service';
 import { AssetItem } from '../../types/asset.types';
 import { MediaGrid } from './MediaGrid';
 import { GridSkeleton } from '../ui/skeletons';
-import { styles } from '../../styles/app/media.styles';
+import { styles } from '../../styles/app/media-modal.styles';
 import { DS } from '../../constants/ds';
 
 type Props = {

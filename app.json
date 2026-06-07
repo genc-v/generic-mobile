@@ -45,7 +45,8 @@
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos to upload assets."
         }
       ],
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true,

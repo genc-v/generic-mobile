@@ -7,11 +7,6 @@ import {
   AuthRefreshResponse,
   AuthRegisterResponse,
   Auth2faLoginResponse,
-  Auth2faSetupResponse,
-  Auth2faActionResponse,
-  AccountResponse,
-  UpdateAccountBody,
-  UpdateAccountResponse,
 } from "../types/api.types";
 
 export const SECURE_STORE_KEYS = {
@@ -40,7 +35,6 @@ class AuthService {
 
       await this.checkAndRefreshJwt();
 
-      console.log(jwtToken);
       const currentJwt = await SecureStore.getItemAsync(
         SECURE_STORE_KEYS.JWT_TOKEN,
       );
@@ -205,14 +199,6 @@ class AuthService {
     }
   }
 
-  private async authedHeaders(): Promise<Record<string, string>> {
-    const jwtToken = await SecureStore.getItemAsync(SECURE_STORE_KEYS.JWT_TOKEN);
-    return {
-      ...AUTH_HEADERS,
-      ...(jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}),
-    };
-  }
-
   // Roles carried in the JWT. .NET emits the role claim under either "role"
   // or the long ClaimTypes.Role URI, as a string or array.
   async getJwtRoles(): Promise<string[]> {
@@ -234,54 +220,6 @@ class AuthService {
   async isAdmin(): Promise<boolean> {
     const roles = await this.getJwtRoles();
     return roles.some((r) => r.toLowerCase() === "admin");
-  }
-
-  async getAccount(): Promise<AccountResponse> {
-    const response = await fetch(`${AUTH_API_URL}/account`, {
-      method: 'GET',
-      headers: await this.authedHeaders(),
-    });
-    if (!response.ok) throw new Error(`Get account failed with status ${response.status}`);
-    return response.json();
-  }
-
-  async updateAccount(body: Partial<UpdateAccountBody>): Promise<UpdateAccountResponse> {
-    const response = await fetch(`${AUTH_API_URL}/account`, {
-      method: 'PUT',
-      headers: await this.authedHeaders(),
-      body: JSON.stringify(body),
-    });
-    if (!response.ok) throw new Error(`Update account failed with status ${response.status}`);
-    return response.json();
-  }
-
-  async setup2fa(): Promise<Auth2faSetupResponse> {
-    const response = await fetch(`${AUTH_API_URL}/2fa/setup`, {
-      method: 'POST',
-      headers: await this.authedHeaders(),
-    });
-    if (!response.ok) throw new Error(`2FA setup failed with status ${response.status}`);
-    return response.json();
-  }
-
-  async confirm2fa(code: string): Promise<Auth2faActionResponse> {
-    const response = await fetch(`${AUTH_API_URL}/2fa/confirm`, {
-      method: 'POST',
-      headers: await this.authedHeaders(),
-      body: JSON.stringify({ code }),
-    });
-    if (!response.ok) throw new Error(`2FA confirm failed with status ${response.status}`);
-    return response.json();
-  }
-
-  async disable2fa(code: string): Promise<Auth2faActionResponse> {
-    const response = await fetch(`${AUTH_API_URL}/2fa/disable`, {
-      method: 'POST',
-      headers: await this.authedHeaders(),
-      body: JSON.stringify({ code }),
-    });
-    if (!response.ok) throw new Error(`2FA disable failed with status ${response.status}`);
-    return response.json();
   }
 
   async logout(): Promise<void> {
