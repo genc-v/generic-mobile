@@ -5,7 +5,7 @@ import { Image } from 'expo-image';
 import Svg, { Path } from 'react-native-svg';
 import { AssetItem } from '../../types/asset.types';
 import { ImageIcon } from './MediaIcons';
-import { styles } from '../../styles/app/media.styles';
+import { styles } from '../../styles/app/media-modal.styles';
 import { DS } from '../../constants/ds';
 
 type Props = {

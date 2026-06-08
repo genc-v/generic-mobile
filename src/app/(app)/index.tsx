@@ -1,4 +1,5 @@
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Image } from 'expo-image';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Brand } from '../../components/ui/brand';
@@ -43,7 +44,15 @@ export default function OrganisationsScreen() {
             )}
           </TouchableOpacity>
           <TouchableOpacity style={styles.avatar} onPress={vm.goToProfile} activeOpacity={0.7}>
+<<<<<<< HEAD
             <Text style={styles.avatarText}>ME</Text>
+=======
+            {vm.avatarUrl ? (
+              <Image source={{ uri: vm.avatarUrl }} style={{ width: 30, height: 30, borderRadius: 15 }} contentFit="cover" />
+            ) : (
+              <Text style={styles.avatarText}>{vm.initials}</Text>
+            )}
+>>>>>>> 7d11747ab31ea83a11d599a14b4ffdf79b2adc6c
           </TouchableOpacity>
         </View>
       </View>
@@ -87,7 +96,7 @@ export default function OrganisationsScreen() {
         ListFooterComponent={
           vm.loadingMore ? (
             <View style={styles.loadingMore}>
-              <ActivityIndicator color={DS.accent} size="small" />
+              <ActivityIndicator color={DS.text3} size="small" />
             </View>
           ) : null
         }

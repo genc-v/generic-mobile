@@ -4,7 +4,7 @@ import { DS } from '../../constants/ds';
 // Line icons for the admin Manage Users area, drawn in the same stroke style
 // as the content/media icons used elsewhere in the app.
 
-export function UsersIcon({ size = 20, color = DS.accent }: { size?: number; color?: string }) {
+export function UsersIcon({ size = 20, color = DS.text2 }: { size?: number; color?: string }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 22 22" fill="none">
       <Circle cx={8} cy={7} r={3.2} stroke={color} strokeWidth={1.3} />
@@ -15,7 +15,7 @@ export function UsersIcon({ size = 20, color = DS.accent }: { size?: number; col
   );
 }
 
-export function ShieldIcon({ size = 20, color = DS.accent }: { size?: number; color?: string }) {
+export function ShieldIcon({ size = 20, color = DS.text2 }: { size?: number; color?: string }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 22 22" fill="none">
       <Path d="M11 2l7 2.8v5.4c0 4.6-3 7.8-7 9.3-4-1.5-7-4.7-7-9.3V4.8L11 2Z" stroke={color} strokeWidth={1.3} strokeLinejoin="round" />

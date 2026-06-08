@@ -22,28 +22,28 @@ export function formatRelativeTime(iso?: string): string {
   return date.toLocaleDateString();
 }
 
-export function notificationIcon(type?: string): string {
+export type NotifIconKind = 'asset' | 'user' | 'key' | 'edit' | 'delete' | 'bell';
+
+export function notificationIconKind(type?: string): NotifIconKind {
   switch (type?.toLowerCase()) {
     case 'asset':
     case 'processing':
-      return '✓';
+      return 'asset';
     case 'member':
     case 'user':
-      return '👤';
+      return 'user';
     case 'apikey':
     case 'api_key':
     case 'security':
-      return '🔑';
+      return 'key';
     case 'content':
     case 'entry':
     case 'update':
-      return '✏️';
+      return 'edit';
     case 'delete':
     case 'deleted':
-      return '🗑';
-    case 'login':
-      return '🔔';
+      return 'delete';
     default:
-      return '🔔';
+      return 'bell';
   }
 }

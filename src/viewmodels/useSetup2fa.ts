@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import * as Clipboard from 'expo-clipboard';
-import { authService } from '../services/auth.service';
+import { twoFactorService } from '../services/twoFactor.service';
 import { DIGIT_COUNT } from '../components/ui/otp-input';
 
 type Step = 'loading' | 'qr' | 'error';
@@ -20,7 +20,7 @@ export function useSetup2fa(visible: boolean, onEnabled: () => void) {
     setStep('loading');
     setCode('');
     setError(null);
-    authService.setup2fa()
+    twoFactorService.setup()
       .then(result => {
         if (result.success && result.data) {
           setQrUri(result.data.qrCodeSetupImageUrl);
@@ -46,7 +46,7 @@ export function useSetup2fa(visible: boolean, onEnabled: () => void) {
     setError(null);
     setConfirming(true);
     try {
-      const result = await authService.confirm2fa(code);
+      const result = await twoFactorService.confirm(code);
       if (result.success) {
         onEnabled();
       } else {

@@ -5,7 +5,7 @@ import { GenerateKeySheet } from './GenerateKeySheet';
 import { RevealKeySheet } from './RevealKeySheet';
 import { CardListSkeleton } from '../ui/skeletons';
 import { useApiKeys } from '../../viewmodels/useApiKeys';
-import { styles } from '../../styles/app/api-keys.styles';
+import { styles } from '../../styles/app/api-key-card.styles';
 import { DS } from '../../constants/ds';
 
 export function ApiKeysSection({ orgId }: { orgId: string }) {

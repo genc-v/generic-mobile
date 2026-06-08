@@ -25,12 +25,21 @@ function normalizeNotification(raw: NotificationItem): NotificationItem {
   };
 }
 
-function parseListResponse(json: NotificationsListResponse | NotificationItem[]): NotificationItem[] {
+interface PagedResult {
+  items: NotificationItem[];
+  hasMore: boolean;
+  totalCount: number;
+}
+
+function parseListResponse(json: NotificationsListResponse | NotificationItem[]): PagedResult {
   if (Array.isArray(json)) {
-    return json.map(normalizeNotification);
+    return { items: json.map(normalizeNotification), hasMore: false, totalCount: json.length };
   }
-  const items = json.data ?? [];
-  return items.map(normalizeNotification);
+  const items = (json.items ?? json.data ?? []).map(normalizeNotification);
+  const totalCount = json.totalCount ?? items.length;
+  const pageNumber = json.pageNumber ?? 1;
+  const totalPages = json.totalPages ?? (json.pageSize ? Math.ceil(totalCount / json.pageSize) : 1);
+  return { items, hasMore: pageNumber < totalPages, totalCount };
 }
 
 async function authHeaders(): Promise<Record<string, string>> {
@@ -42,10 +51,34 @@ async function authHeaders(): Promise<Record<string, string>> {
   };
 }
 
-export async function fetchNotifications(): Promise<NotificationItem[]> {
-  const response = await fetch(`${BASE_URL}/notifications`, {
+export async function markAllNotificationsRead(): Promise<void> {
+  const response = await fetch(`${BASE_URL}/notifications/read-all`, {
+    method: 'PATCH',
     headers: await authHeaders(),
   });
+  if (!response.ok && response.status !== 204) {
+    throw new Error(`PATCH notifications/read-all failed with status ${response.status}`);
+  }
+}
+
+export async function markNotificationRead(id: string): Promise<void> {
+  const response = await fetch(`${BASE_URL}/notifications/${id}/read`, {
+    method: 'PATCH',
+    headers: await authHeaders(),
+  });
+  if (!response.ok && response.status !== 204) {
+    throw new Error(`PATCH notifications/${id}/read failed with status ${response.status}`);
+  }
+}
+
+const PAGE_SIZE = 10;
+
+export async function fetchNotifications(
+  pageNumber = 1,
+  pageSize = PAGE_SIZE,
+): Promise<{ items: NotificationItem[]; hasMore: boolean; totalCount: number }> {
+  const url = `${BASE_URL}/notifications?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+  const response = await fetch(url, { headers: await authHeaders() });
 
   if (!response.ok) {
     throw new Error(`GET notifications failed with status ${response.status}`);

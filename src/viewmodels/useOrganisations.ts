@@ -1,10 +1,22 @@
 import { useState, useRef, useCallback } from 'react';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { organisationService } from '../services/organisation.service';
+import { profileService } from '../services/profile.service';
+import { toast } from '../utils/toast';
 import { useNotificationUnreadCount } from './useNotificationUnreadCount';
 import { Organisation } from '../types/organisation.types';
+import { Profile } from '../types/profile.types';
+import { cache, CACHE_KEYS } from '../utils/cache';
 
 const PAGE_SIZE = 10;
+
+function profileInitials(p: Profile | null | undefined): string {
+  if (!p) return 'ME';
+  const first = p.firstName?.[0] ?? '';
+  const last = p.lastName?.[0] ?? '';
+  if (first || last) return `${first}${last}`.toUpperCase();
+  return (p.displayName?.[0] ?? 'ME').toUpperCase();
+}
 
 export function useOrganisations() {
   const router = useRouter();
@@ -15,6 +27,12 @@ export function useOrganisations() {
   const [error, setError] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const { unreadCount } = useNotificationUnreadCount();
+<<<<<<< HEAD
+=======
+  const cachedProfile = cache.getSync<Profile>(CACHE_KEYS.profile);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(cachedProfile?.avatarUrl ?? null);
+  const [initials, setInitials] = useState<string>(profileInitials(cachedProfile));
+>>>>>>> 7d11747ab31ea83a11d599a14b4ffdf79b2adc6c
 
   const currentPage = useRef(1);
   const hasMore = useRef(true);
@@ -28,8 +46,10 @@ export function useOrganisations() {
       currentPage.current = result.pageNumber;
       setOrgs(prev => replace ? result.items : [...prev, ...result.items]);
       hasLoaded.current = true;
-    } catch {
-      setError('Failed to load organisations.');
+    } catch (e: any) {
+      const msg = e?.message ?? 'Failed to load organisations.';
+      setError(msg);
+      toast.error(msg);
     }
   }, []);
 
@@ -44,6 +64,13 @@ export function useOrganisations() {
       } else {
         fetchPage(1, true);
       }
+      profileService.get()
+        .then(p => {
+          setAvatarUrl(p.avatarUrl ?? null);
+          setInitials(profileInitials(p));
+          cache.set(CACHE_KEYS.profile, p);
+        })
+        .catch(() => {});
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fetchPage]),
   );
@@ -83,7 +110,11 @@ export function useOrganisations() {
   return {
     orgs, totalCount, loading, loadingMore, error,
     showCreate, setShowCreate, hasMore,
+<<<<<<< HEAD
     unreadCount,
+=======
+    unreadCount, avatarUrl, initials,
+>>>>>>> 7d11747ab31ea83a11d599a14b4ffdf79b2adc6c
     handleRefresh, handleEndReached, handleOrgCreated, goToProfile, goToNotifications, goToOrg,
   };
 }

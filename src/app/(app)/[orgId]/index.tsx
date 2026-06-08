@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, ActivityIndicator,
 } from 'react-native';
@@ -15,7 +15,6 @@ import { ContentFiltersSheet } from '../../../components/content/ContentFiltersS
 import { BottomTabBar, ContentTab } from '../../../components/content/BottomTabBar';
 import { MediaGrid } from '../../../components/media/MediaGrid';
 import { AssetDetailSheet } from '../../../components/media/AssetDetailSheet';
-import { UploadIcon } from '../../../components/media/MediaIcons';
 import { ListSkeleton, SimpleListSkeleton, ChipSkeleton, GridSkeleton } from '../../../components/ui/skeletons';
 import { useContentList, StatusFilter } from '../../../viewmodels/useContentList';
 import { useOrgSettings } from '../../../viewmodels/useOrgSettings';
@@ -26,7 +25,7 @@ import { styles } from '../../../styles/app/content-list.styles';
 import { styles as catStyles } from '../../../styles/app/categories.styles';
 import { styles as tagStyles } from '../../../styles/app/tags.styles';
 import { styles as filterStyles } from '../../../styles/app/content-filters.styles';
-import { styles as mediaStyles } from '../../../styles/app/media.styles';
+import { styles as mediaStyles } from '../../../styles/app/media-grid.styles';
 import { DS } from '../../../constants/ds';
 
 const FILTERS: StatusFilter[] = ['All', 'New', 'Draft', 'Published', 'Unpublished'];
@@ -42,6 +41,11 @@ export default function OrgDashboard() {
   const [activeTab, setActiveTab] = useState<ContentTab>('Content');
   const mediaVm = useMediaLibrary(orgId, activeTab === 'Media');
 
+  useEffect(() => {
+    if (activeTab === 'Categories') catVm.fetchCategories();
+    else if (activeTab === 'Tags') tagVm.fetchTags();
+  }, [activeTab]);
+
   const { canEdit } = settingsVm;
 
   function handleTabPress(tab: ContentTab) {
@@ -56,21 +60,7 @@ export default function OrgDashboard() {
     <SafeAreaView style={styles.safe} edges={['top']}>
       <StatusBar style="light" />
 
-      <TopBar
-        title={activeTab}
-        right={activeTab === 'Media' && canEdit ? (
-          <TouchableOpacity
-            style={mediaStyles.uploadBtn}
-            onPress={mediaVm.handleUpload}
-            disabled={mediaVm.uploading}
-            activeOpacity={0.8}
-          >
-            {mediaVm.uploading
-              ? <ActivityIndicator size="small" color={DS.accent} />
-              : <UploadIcon />}
-          </TouchableOpacity>
-        ) : undefined}
-      />
+      <TopBar title={activeTab} />
 
       {activeTab === 'Content' && (
         <>
@@ -336,7 +326,12 @@ export default function OrgDashboard() {
               </Text>
             </View>
           ) : (
-            <MediaGrid assets={mediaVm.assets} onPress={mediaVm.openDetail} />
+            <MediaGrid
+              assets={mediaVm.assets}
+              onPress={mediaVm.openDetail}
+              onEndReached={mediaVm.loadMore}
+              loadingMore={mediaVm.loadingMore}
+            />
           )}
 
           <AssetDetailSheet
@@ -354,7 +349,7 @@ export default function OrgDashboard() {
         </>
       )}
 
-      <BottomTabBar active={activeTab} onPress={handleTabPress} />
+      <BottomTabBar active={activeTab} onPress={handleTabPress} showSettings={settingsVm.canManageOrg} />
     </SafeAreaView>
   );
 }

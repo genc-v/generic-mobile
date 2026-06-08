@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { authService } from '../services/auth.service';
+import { twoFactorService } from '../services/twoFactor.service';
 import { DIGIT_COUNT } from '../components/ui/otp-input';
 
 export function useDisable2fa(onDisabled: () => void, onClose: () => void) {
@@ -24,7 +24,7 @@ export function useDisable2fa(onDisabled: () => void, onClose: () => void) {
     setError(null);
     setLoading(true);
     try {
-      const result = await authService.disable2fa(code);
+      const result = await twoFactorService.disable(code);
       if (result.success) {
         reset();
         onDisabled();

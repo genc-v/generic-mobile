@@ -1,0 +1,112 @@
+import { StyleSheet } from 'react-native';
+import { DS } from '../../constants/ds';
+
+export const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: DS.bg },
+  centred: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 60 },
+  listContent: { padding: 16, paddingBottom: 120 },
+
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: DS.surface2,
+    borderWidth: 1,
+    borderColor: DS.border,
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 8,
+  },
+  rowName: { fontSize: 14, fontWeight: '500', color: DS.text1, letterSpacing: -0.15 },
+  rowSub: { fontSize: 12, color: DS.text3, marginTop: 2 },
+
+  avatar: { backgroundColor: DS.surface3, alignItems: 'center', justifyContent: 'center' },
+  avatarText: { fontSize: 14, fontWeight: '700', color: DS.text1 },
+
+  roleBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  roleBadgeText: { fontSize: 11, fontWeight: '600' },
+
+  previewCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: DS.surface2,
+    borderWidth: 1,
+    borderColor: DS.border,
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 4,
+  },
+
+  emptyTitle: { fontSize: 15, color: DS.text2, fontWeight: '500' },
+  emptyHint: { fontSize: 13, color: DS.text3 },
+  errorText: { fontSize: 13, color: DS.red, fontWeight: '500' },
+
+  fab: {
+    position: 'absolute',
+    right: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    height: 36,
+    paddingHorizontal: 14,
+    borderRadius: 6,
+    backgroundColor: DS.text1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  fabPlus: { fontSize: 16, fontWeight: '400', color: '#0A0A0A', lineHeight: 18 },
+  fabLabel: { fontSize: 13, fontWeight: '500', color: '#0A0A0A', letterSpacing: -0.1 },
+
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+  sheetWrapper: { justifyContent: 'flex-end' },
+  sheet: {
+    backgroundColor: DS.bg,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    borderWidth: 1,
+    borderBottomWidth: 0,
+    borderColor: DS.border2,
+    padding: 24,
+    paddingTop: 12,
+  },
+  handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: DS.border2, alignSelf: 'center', marginBottom: 24 },
+  sheetTitle: { fontSize: 17, fontWeight: '700', color: DS.text1, letterSpacing: -0.4, marginBottom: 6 },
+  sheetSubtitle: { fontSize: 13, color: DS.text2, marginBottom: 20, letterSpacing: -0.15 },
+  divider: { height: 1, backgroundColor: DS.border, marginVertical: 16 },
+  sectionLabel: { fontSize: 11, fontWeight: '500', color: DS.text3, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10 },
+
+  chipsRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: DS.border,
+    backgroundColor: DS.surface2,
+  },
+  chipActive: { backgroundColor: DS.surface3, borderColor: DS.border2 },
+  chipText: { fontSize: 13, color: DS.text2, fontWeight: '500' },
+  chipTextActive: { color: DS.text1 },
+
+  deleteBtn: {
+    height: 44,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(239,68,68,0.3)',
+    backgroundColor: 'rgba(239,68,68,0.07)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  deleteBtnLabel: { fontSize: 14, fontWeight: '600', color: DS.red },
+});

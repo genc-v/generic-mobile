@@ -9,68 +9,25 @@ import Svg, { Path } from 'react-native-svg';
 import { StatusPill, STATUS_COLOR } from '../../../../components/content/StatusPill';
 import { PickerSheet } from '../../../../components/content/PickerSheet';
 import { EntryPreviewModal } from '../../../../components/content/EntryPreviewModal';
-import { Skeleton } from '../../../../components/ui/Skeleton';
+import { EntryEditorSkeleton } from '../../../../components/content/EntryEditorSkeleton';
+import { EditorToolbar } from '../../../../components/content/EditorToolbar';
+import { MediaPickerSheet } from '../../../../components/media/MediaPickerSheet';
 import { PrimaryBtn, GhostBtn } from '../../../../components/ui/button';
 import { useEntryEditor } from '../../../../viewmodels/useEntryEditor';
+import { useOrgSettings } from '../../../../viewmodels/useOrgSettings';
 import { styles } from '../../../../styles/app/entry-editor.styles';
 import { DS } from '../../../../constants/ds';
-
-type ToolAction =
-  | { kind: 'wrap'; prefix: string; suffix?: string }
-  | { kind: 'line'; marker: string }
-  | { kind: 'insert'; snippet: string; cursorOffset?: number }
-  | { kind: 'sep' };
-
-const TOOLS: { label: string; bold?: boolean; italic?: boolean; underline?: boolean; action: ToolAction }[] = [
-  { label: 'B', bold: true, action: { kind: 'wrap', prefix: '**' } },
-  { label: 'I', italic: true, action: { kind: 'wrap', prefix: '_' } },
-  { label: 'S', action: { kind: 'wrap', prefix: '~~' } },
-  { label: '', action: { kind: 'sep' } },
-  { label: 'H1', action: { kind: 'line', marker: '# ' } },
-  { label: 'H2', action: { kind: 'line', marker: '## ' } },
-  { label: '“ ”', action: { kind: 'line', marker: '> ' } },
-  { label: '•', action: { kind: 'line', marker: '- ' } },
-  { label: '1.', action: { kind: 'line', marker: '1. ' } },
-  { label: '', action: { kind: 'sep' } },
-  { label: '< >', action: { kind: 'wrap', prefix: '`' } },
-  { label: '🔗', action: { kind: 'insert', snippet: '[text](url)', cursorOffset: 1 } },
-];
-
-function EntryEditorSkeleton() {
-  return (
-    <View>
-      <Skeleton height={220} radius={0} />
-      <View style={{ padding: 20, gap: 16 }}>
-        <Skeleton width="65%" height={24} />
-        <View style={{ height: 1, backgroundColor: DS.border }} />
-        <View style={{ flexDirection: 'row', gap: 6 }}>
-          {[32, 32, 32, 40, 40].map((w, i) => <Skeleton key={i} width={w} height={32} radius={6} />)}
-        </View>
-        <Skeleton width="100%" height={14} />
-        <Skeleton width="92%" height={14} />
-        <Skeleton width="78%" height={14} />
-        <Skeleton width="40%" height={11} style={{ marginTop: 12 }} />
-        <Skeleton height={44} radius={8} />
-        <Skeleton height={44} radius={8} />
-      </View>
-    </View>
-  );
-}
 
 export default function EntryEditor() {
   const { orgId, entryId } = useLocalSearchParams<{ orgId: string; entryId: string }>();
   const vm = useEntryEditor(orgId, entryId);
+  const { canEdit } = useOrgSettings(orgId);
   const insets = useSafeAreaInsets();
   const [showPreview, setShowPreview] = useState(false);
+  const [authorExpanded, setAuthorExpanded] = useState(false);
 
   const status = vm.entry?.status ?? 'New';
   const statusColor = STATUS_COLOR[status] ?? DS.text3;
-
-  function runTool(action: ToolAction) {
-    if (action.kind === 'wrap') vm.wrapSelection(action.prefix, action.suffix);
-    else if (action.kind === 'line') vm.prefixLine(action.marker);
-    else if (action.kind === 'insert') vm.insertAtCursor(action.snippet, action.cursorOffset);
-  }
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -110,7 +67,7 @@ export default function EntryEditor() {
         <EntryEditorSkeleton />
       ) : (
         <ScrollView
-          contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 80 }]}
+          contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + (canEdit ? 80 : 24) }]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
@@ -118,7 +75,7 @@ export default function EntryEditor() {
             {vm.assetUrl ? (
               <Image source={{ uri: vm.assetUrl }} style={styles.heroImage} resizeMode="cover" />
             ) : (
-              !vm.uploading && (
+              canEdit && !vm.uploading && (
                 <TouchableOpacity style={styles.heroCenterBtn} onPress={vm.handlePickAsset} activeOpacity={0.85}>
                   <Svg width={15} height={15} viewBox="0 0 16 16" fill="none">
                     <Path d="M8 10.5V3M4.5 6.5L8 3l3.5 3.5M3 12.5h10" stroke="#0A0A0A" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
@@ -128,7 +85,7 @@ export default function EntryEditor() {
               )
             )}
 
-            {vm.assetUrl && !vm.uploading && (
+            {canEdit && vm.assetUrl && !vm.uploading && (
               <View style={styles.heroButtons}>
                 <TouchableOpacity style={styles.heroBtn} onPress={vm.handlePickAsset} activeOpacity={0.8}>
                   <Text style={styles.heroBtnText}>Replace</Text>
@@ -155,37 +112,18 @@ export default function EntryEditor() {
               placeholder="Untitled"
               placeholderTextColor={DS.text3}
               multiline
+              editable={canEdit}
             />
             <View style={styles.divider} />
           </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.toolbar}
-            keyboardShouldPersistTaps="handled"
-          >
-            {TOOLS.map((tool, i) =>
-              tool.action.kind === 'sep' ? (
-                <View key={`sep-${i}`} style={styles.toolbarSep} />
-              ) : (
-                <TouchableOpacity
-                  key={tool.label + i}
-                  style={styles.toolBtn}
-                  onPress={() => runTool(tool.action)}
-                  activeOpacity={0.7}
-                >
-                  <Text style={[
-                    styles.toolBtnText,
-                    tool.bold && { fontWeight: '700' },
-                    tool.italic && { fontStyle: 'italic' },
-                    tool.underline && { textDecorationLine: 'underline' },
-                  ]}>
-                    {tool.label}
-                  </Text>
-                </TouchableOpacity>
-              )
-            )}
-          </ScrollView>
+
+          {canEdit && (
+            <EditorToolbar
+              onWrap={vm.wrapSelection}
+              onPrefixLine={vm.prefixLine}
+              onInsert={vm.insertAtCursor}
+            />
+          )}
 
           <TextInput
             style={styles.contentInput}
@@ -197,30 +135,36 @@ export default function EntryEditor() {
             placeholderTextColor={DS.text3}
             multiline
             textAlignVertical="top"
+            editable={canEdit}
           />
+
           <View style={styles.properties}>
             <Text style={styles.sectionLabel}>Properties</Text>
 
             <View style={styles.propRow}>
               <Text style={styles.propLabel}>Category</Text>
-              <TouchableOpacity
-                style={styles.propValueBtn}
-                onPress={() => vm.setShowCategoryPicker(true)}
-                activeOpacity={0.7}
-              >
-                {vm.categoryName ? (
-                  <>
-                    <Text style={styles.propValueText}>{vm.categoryName}</Text>
-                    <TouchableOpacity style={styles.propClear} onPress={vm.clearCategory} hitSlop={8}>
-                      <Svg width={11} height={11} viewBox="0 0 11 11" fill="none">
-                        <Path d="M2 2l7 7M9 2l-7 7" stroke={DS.text3} strokeWidth={1.3} strokeLinecap="round" />
-                      </Svg>
-                    </TouchableOpacity>
-                  </>
-                ) : (
-                  <Text style={styles.propPlaceholder}>Select…</Text>
-                )}
-              </TouchableOpacity>
+              {canEdit ? (
+                <TouchableOpacity
+                  style={styles.propValueBtn}
+                  onPress={() => vm.setShowCategoryPicker(true)}
+                  activeOpacity={0.7}
+                >
+                  {vm.categoryName ? (
+                    <>
+                      <Text style={styles.propValueText}>{vm.categoryName}</Text>
+                      <TouchableOpacity style={styles.propClear} onPress={vm.clearCategory} hitSlop={8}>
+                        <Svg width={11} height={11} viewBox="0 0 11 11" fill="none">
+                          <Path d="M2 2l7 7M9 2l-7 7" stroke={DS.text3} strokeWidth={1.3} strokeLinecap="round" />
+                        </Svg>
+                      </TouchableOpacity>
+                    </>
+                  ) : (
+                    <Text style={styles.propPlaceholder}>Select…</Text>
+                  )}
+                </TouchableOpacity>
+              ) : (
+                <Text style={styles.propValue}>{vm.categoryName || '—'}</Text>
+              )}
             </View>
 
             <View style={styles.propRow}>
@@ -244,83 +188,118 @@ export default function EntryEditor() {
               </View>
             )}
 
+            {vm.authorProfile !== null && (
+              <View style={{ borderBottomWidth: 1, borderBottomColor: DS.border }}>
+                <TouchableOpacity
+                  style={[styles.propRow, { borderBottomWidth: 0 }]}
+                  onPress={() => setAuthorExpanded(v => !v)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.propLabel}>Author</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7 }}>
+                    {vm.authorProfile.avatarUrl ? (
+                      <Image source={{ uri: vm.authorProfile.avatarUrl }} style={{ width: 22, height: 22, borderRadius: 11 }} />
+                    ) : (
+                      <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: DS.surface2, borderWidth: 1, borderColor: DS.border }} />
+                    )}
+                    <Text style={styles.propValue}>{vm.authorProfile.displayName ?? '—'}</Text>
+                    <Svg width={10} height={10} viewBox="0 0 10 10" fill="none" style={{ transform: [{ rotate: authorExpanded ? '180deg' : '0deg' }] }}>
+                      <Path d="M2 3.5L5 6.5L8 3.5" stroke={DS.text3} strokeWidth={1.3} strokeLinecap="round" strokeLinejoin="round" />
+                    </Svg>
+                  </View>
+                </TouchableOpacity>
+                {authorExpanded && (
+                  <View style={{ paddingHorizontal: 0, paddingBottom: 12, gap: 8 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                      {vm.authorProfile.avatarUrl ? (
+                        <Image source={{ uri: vm.authorProfile.avatarUrl }} style={{ width: 44, height: 44, borderRadius: 22 }} />
+                      ) : (
+                        <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: DS.surface2, borderWidth: 1, borderColor: DS.border }} />
+                      )}
+                      <View style={{ gap: 2 }}>
+                        <Text style={[styles.propValue, { fontWeight: '600' }]}>{vm.authorProfile.displayName ?? '—'}</Text>
+                        <Text style={{ fontSize: 11, color: DS.text3, fontVariant: ['tabular-nums'] }} numberOfLines={1}>{vm.authorProfile.userId}</Text>
+                      </View>
+                    </View>
+                    {vm.authorProfile.bio ? (
+                      <Text style={{ fontSize: 13, color: DS.text2, lineHeight: 19 }}>{vm.authorProfile.bio}</Text>
+                    ) : (
+                      <Text style={{ fontSize: 13, color: DS.text3 }}>No bio.</Text>
+                    )}
+                  </View>
+                )}
+              </View>
+            )}
+
             <View style={[styles.propRow, { borderBottomWidth: 0 }]}>
               <Text style={styles.propLabel}>Content ID</Text>
-              <Text style={[styles.propValue, { fontVariant: ['tabular-nums'] }]} numberOfLines={1}>
-                {entryId}
-              </Text>
+              <Text style={[styles.propValue, { fontVariant: ['tabular-nums'] }]} numberOfLines={1}>{entryId}</Text>
             </View>
           </View>
+
           <View style={styles.tagsSection}>
             <Text style={styles.sectionLabel}>Tags</Text>
             <View style={styles.tagsRow}>
               {vm.tags.map(tag => (
                 <View key={tag.tagId} style={styles.tag}>
                   <Text style={styles.tagLabel}>{tag.name}</Text>
-                  <TouchableOpacity style={styles.tagRemove} onPress={() => vm.removeTag(tag.tagId)} hitSlop={6}>
-                    <Svg width={9} height={9} viewBox="0 0 9 9" fill="none">
-                      <Path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke={DS.text3} strokeWidth={1.2} strokeLinecap="round" />
-                    </Svg>
-                  </TouchableOpacity>
+                  {canEdit && (
+                    <TouchableOpacity style={styles.tagRemove} onPress={() => vm.removeTag(tag.tagId)} hitSlop={6}>
+                      <Svg width={9} height={9} viewBox="0 0 9 9" fill="none">
+                        <Path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke={DS.text3} strokeWidth={1.2} strokeLinecap="round" />
+                      </Svg>
+                    </TouchableOpacity>
+                  )}
                 </View>
               ))}
-              <TouchableOpacity style={styles.addTagChip} onPress={() => vm.setShowTagPicker(true)} activeOpacity={0.7}>
-                <Text style={styles.addTagLabel}>+ Add</Text>
-              </TouchableOpacity>
+              {canEdit && (
+                <TouchableOpacity style={styles.addTagChip} onPress={() => vm.setShowTagPicker(true)} activeOpacity={0.7}>
+                  <Text style={styles.addTagLabel}>+ Add</Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
-          <View style={styles.dangerSection}>
-            {vm.isPublished && (
-              <TouchableOpacity
-                style={styles.unpublishBtn}
-                onPress={vm.handleUnpublish}
-                disabled={vm.unpublishing}
-                activeOpacity={0.7}
-              >
-                {vm.unpublishing
-                  ? <ActivityIndicator size="small" color={DS.text1} />
-                  : <Text style={styles.unpublishLabel}>Unpublish</Text>
-                }
+
+          {canEdit && (
+            <View style={styles.dangerSection}>
+              {vm.isPublished && (
+                <TouchableOpacity style={styles.unpublishBtn} onPress={vm.handleUnpublish} disabled={vm.unpublishing} activeOpacity={0.7}>
+                  {vm.unpublishing
+                    ? <ActivityIndicator size="small" color={DS.text1} />
+                    : <Text style={styles.unpublishLabel}>Unpublish</Text>}
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity style={styles.deleteBtn} onPress={vm.handleDelete} disabled={vm.deleting} activeOpacity={0.7}>
+                {vm.deleting
+                  ? <ActivityIndicator color={DS.red} />
+                  : <Text style={styles.deleteLabel}>Delete Entry</Text>}
               </TouchableOpacity>
-            )}
+            </View>
+          )}
 
-            <TouchableOpacity style={styles.deleteBtn} onPress={vm.handleDelete} disabled={vm.deleting} activeOpacity={0.7}>
-              {vm.deleting
-                ? <ActivityIndicator color={DS.red} />
-                : <Text style={styles.deleteLabel}>Delete Entry</Text>}
-            </TouchableOpacity>
-          </View>
-
-          {(vm.error || vm.saveSuccess) && (
+          {canEdit && vm.saveSuccess && (
             <View style={styles.feedback}>
-              {vm.error && <Text style={styles.errorText}>{vm.error}</Text>}
-              {vm.saveSuccess && <Text style={styles.successText}>Saved.</Text>}
+              <Text style={styles.successText}>Saved.</Text>
             </View>
           )}
         </ScrollView>
       )}
 
-      <View style={[styles.actionBar, { paddingBottom: insets.bottom + 12 }]}>
-        {!vm.canPublish && !vm.loading && (
-          <Text style={styles.publishHint}>
-            Add {vm.missingForPublish.join(', ')} to publish
-          </Text>
-        )}
-        <View style={styles.actionButtons}>
-          <View style={{ flex: 1 }}>
-            <GhostBtn label="Save draft" full onPress={vm.handleSaveDraft} loading={vm.saving} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <PrimaryBtn
-              label="Publish"
-              full
-              onPress={vm.handlePublish}
-              loading={vm.saving}
-              disabled={!vm.canPublish}
-            />
+      {canEdit && (
+        <View style={[styles.actionBar, { paddingBottom: insets.bottom + 12 }]}>
+          {!vm.canPublish && !vm.loading && (
+            <Text style={styles.publishHint}>Add {vm.missingForPublish.join(', ')} to publish</Text>
+          )}
+          <View style={styles.actionButtons}>
+            <View style={{ flex: 1 }}>
+              <GhostBtn label="Save draft" full onPress={vm.handleSaveDraft} loading={vm.saving} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <PrimaryBtn label="Publish" full onPress={vm.handlePublish} loading={vm.saving} disabled={!vm.canPublish} />
+            </View>
           </View>
         </View>
-      </View>
+      )}
 
       <EntryPreviewModal
         visible={showPreview}
@@ -354,6 +333,13 @@ export default function EntryEditor() {
         onSearch={vm.searchTags}
         onSelect={item => vm.toggleTag({ tagId: item.id, name: item.name })}
         onClose={() => vm.setShowTagPicker(false)}
+      />
+
+      <MediaPickerSheet
+        visible={vm.showMediaPicker}
+        orgId={orgId}
+        onSelect={vm.handleSelectFromLibrary}
+        onClose={vm.closeMediaPicker}
       />
     </SafeAreaView>
   );

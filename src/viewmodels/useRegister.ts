@@ -30,7 +30,7 @@ export function useRegister() {
         setError('Registration failed. Please try again.');
         return;
       }
-      router.replace('/(app)');
+      router.replace('/(auth)/login');
     } catch {
       setError('Something went wrong. Please try again.');
     } finally {

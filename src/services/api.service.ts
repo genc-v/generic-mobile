@@ -5,6 +5,28 @@ import { authService, SECURE_STORE_KEYS } from './auth.service';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://user.jonfjz.dev/api';
 
+function httpErrorMessage(status: number, body: string): string {
+  try {
+    const json = JSON.parse(body);
+    const msg = json?.message || json?.title || json?.detail || json?.error;
+    if (typeof msg === 'string' && msg.length > 0 && msg.length < 200) return msg;
+  } catch {
+    if (body && body.length < 120 && !body.startsWith('<') && !body.startsWith('{')) return body;
+  }
+  switch (status) {
+    case 400: return 'Invalid request. Please check the data.';
+    case 401: return 'Your session has expired. Please log in again.';
+    case 403: return "You don't have permission to do that.";
+    case 404: return 'The requested item was not found.';
+    case 409: return 'A conflict occurred — the item may have changed.';
+    case 422: return 'The server could not process the request.';
+    case 429: return 'Too many requests. Please wait a moment.';
+    case 500: return 'Server error. Please try again.';
+    case 503: return 'Service unavailable. Please try again later.';
+    default: return `Request failed (${status}).`;
+  }
+}
+
 // Services on their own domain override the base URL; for them `path` is the
 // full resource path rather than being appended after the microservice name.
 const MICROSERVICE_BASE_URLS: Partial<Record<Microservice, string>> = {
@@ -53,8 +75,8 @@ export async function executeApiRequest<T = any>({
   const response = await fetch(url, options);
 
   if (!response.ok) {
-    const detail = await response.text().catch(() => '');
-    throw new Error(`Request failed with status ${response.status}${detail ? `: ${detail.slice(0, 200)}` : ''}`);
+    const body = await response.text().catch(() => '');
+    throw new Error(httpErrorMessage(response.status, body));
   }
 
   if (response.status === 204) return undefined as unknown as T;

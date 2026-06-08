@@ -38,7 +38,6 @@ export default function EditOrganisation() {
                 autoCapitalize="words"
                 editable={vm.canManageOrg}
               />
-              {vm.error && <Text style={styles.errorText}>{vm.error}</Text>}
               {vm.canManageOrg
                 ? <PrimaryBtn label="Save Changes" full onPress={vm.handleSave} loading={vm.saving} />
                 : <Text style={styles.readOnly}>You don&apos;t have permission to edit this organisation.</Text>

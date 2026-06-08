@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { organisationService } from '../services/organisation.service';
 import { cache, CACHE_KEYS } from '../utils/cache';
 import { confirm } from '../utils/confirm';
+import { toast } from '../utils/toast';
 import { OrgRoleName } from '../types/organisation.types';
 
 export function useOrgSettings(orgId: string) {
@@ -17,7 +18,6 @@ export function useOrgSettings(orgId: string) {
 
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -57,12 +57,11 @@ export function useOrgSettings(orgId: string) {
   async function handleSave() {
     if (!editName.trim()) return;
     setSaving(true);
-    setError(null);
     try {
       await organisationService.updateOrg(orgId, editName.trim());
       cache.set(CACHE_KEYS.org(orgId), editName.trim());
-    } catch {
-      setError('Failed to save changes.');
+    } catch (e: any) {
+      toast.error(e?.message ?? 'Failed to save changes.');
     } finally {
       setSaving(false);
     }
@@ -82,8 +81,8 @@ export function useOrgSettings(orgId: string) {
       cache.remove(CACHE_KEYS.org(orgId));
       cache.remove(CACHE_KEYS.orgRole(orgId));
       router.replace('/(app)');
-    } catch {
-      setError('Failed to delete organisation.');
+    } catch (e: any) {
+      toast.error(e?.message ?? 'Failed to delete organisation.');
       setDeleting(false);
     }
   }
@@ -97,7 +96,6 @@ export function useOrgSettings(orgId: string) {
     setEditName,
     saving,
     deleting,
-    error,
     handleSave,
     handleDelete,
   };

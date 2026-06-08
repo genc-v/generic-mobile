@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { authService } from '../services/auth.service';
+import { accountService } from '../services/account.service';
 import { cache, CACHE_KEYS } from '../utils/cache';
+import { toast } from '../utils/toast';
 
 type CachedAccount = { email: string; username: string; hasTwoFactorAuth: boolean };
 
@@ -13,7 +14,6 @@ export function useSecurity() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   const [twoFaEnabled, setTwoFaEnabled] = useState(cached?.hasTwoFactorAuth ?? false);
@@ -34,7 +34,7 @@ export function useSecurity() {
       });
     }
 
-    authService.getAccount()
+    accountService.get()
       .then(res => {
         if (!active || !res.success || !res.data) return;
         setEmail(res.data.email);
@@ -53,14 +53,11 @@ export function useSecurity() {
   }, []);
 
   async function handleSaveAccount() {
-    if (!currentPassword) { setSaveError('Current password is required to save changes.'); return; }
-    setSaveError(null);
     setSaveSuccess(false);
     setSaving(true);
     try {
-      const body: Record<string, string> = { email, username, currentPassword };
-      if (newPassword) body.newPassword = newPassword;
-      const result = await authService.updateAccount(body);
+      const body: Record<string, string> = { email, username, currentPassword: currentPassword || '', newPassword: newPassword || '' };
+      const result = await accountService.update(body);
       if (result.success) {
         cache.set(CACHE_KEYS.account, { email, username, hasTwoFactorAuth: twoFaEnabled });
         setSaveSuccess(true);
@@ -68,10 +65,10 @@ export function useSecurity() {
         setNewPassword('');
         setTimeout(() => setSaveSuccess(false), 2500);
       } else {
-        setSaveError('Failed to update account.');
+        toast.error('Failed to update account.');
       }
-    } catch {
-      setSaveError('Something went wrong. Please try again.');
+    } catch (e: any) {
+      toast.error(e?.message ?? 'Failed to update account.');
     } finally {
       setSaving(false);
     }
@@ -100,7 +97,7 @@ export function useSecurity() {
     username, setUsername,
     currentPassword, setCurrentPassword,
     newPassword, setNewPassword,
-    saving, saveError, saveSuccess,
+    saving, saveSuccess,
     twoFaEnabled,
     showSetup, setShowSetup,
     showDisable, setShowDisable,

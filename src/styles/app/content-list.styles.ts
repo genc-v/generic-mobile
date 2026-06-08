@@ -30,6 +30,7 @@ export const styles = StyleSheet.create({
   },
   filterChipLabel: {
     fontSize: 12,
+    lineHeight: 16,
     color: DS.text3,
     letterSpacing: -0.1,
   },

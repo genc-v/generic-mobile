@@ -66,7 +66,7 @@ export function useProfile() {
 
   async function handleLogout() {
     await authService.logout();
-    router.replace('/(auth)');
+    router.replace('/(auth)/login');
   }
 
   function goToAccount() {
@@ -87,6 +87,7 @@ export function useProfile() {
 
   return {
     profile,
+    avatarUrl: profile?.avatarUrl ?? null,
     loading,
     isAdmin,
     initials,

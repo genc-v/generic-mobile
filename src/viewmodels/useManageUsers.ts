@@ -15,12 +15,10 @@ export function useManageUsers() {
 
   const [search, setSearch] = useState('');
 
-  // Multi-select for bulk deletion.
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [deleting, setDeleting] = useState(false);
 
-  // Detail sheet target.
   const [activeUser, setActiveUser] = useState<ManagedUser | null>(null);
 
   const currentPage = useRef(1);
@@ -85,7 +83,6 @@ export function useManageUsers() {
     setLoadingMore(false);
   }, [loadingMore, loading, fetchPage]);
 
-  // ---- Selection ----
   function toggleSelectMode() {
     setSelectMode(m => !m);
     setSelected(new Set());

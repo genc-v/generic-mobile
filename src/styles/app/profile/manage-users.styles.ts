@@ -1,7 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { DS } from '../../../constants/ds';
 
-// Shared styles for the admin-only Manage Users area (select / users / roles).
 export const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: DS.bg },
   scroll: { padding: 16, paddingBottom: 40 },
@@ -16,7 +15,6 @@ export const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
-  // ---- Nav cards (select screen) ----
   navRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -49,7 +47,6 @@ export const styles = StyleSheet.create({
     borderRadius: 1, right: 0, bottom: 0, transform: [{ rotate: '-45deg' }, { translateY: -1 }],
   },
 
-  // ---- Search ----
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -70,7 +67,6 @@ export const styles = StyleSheet.create({
     color: DS.text1,
   },
 
-  // ---- List rows ----
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -83,8 +79,8 @@ export const styles = StyleSheet.create({
     marginBottom: 8,
   },
   rowSelected: {
-    borderColor: DS.accentBorder,
-    backgroundColor: DS.accentDim,
+    borderColor: DS.border2,
+    backgroundColor: DS.surface3,
   },
   rowAvatar: {
     width: 38,
@@ -109,8 +105,8 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   checkboxOn: {
-    backgroundColor: DS.accent,
-    borderColor: DS.accent,
+    backgroundColor: DS.text1,
+    borderColor: DS.text1,
   },
   checkboxTick: { color: '#0A0A0A', fontSize: 13, fontWeight: '800' },
 
@@ -118,17 +114,15 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
-    backgroundColor: DS.accentDim,
+    backgroundColor: DS.surface3,
     borderWidth: 1,
-    borderColor: DS.accentBorder,
+    borderColor: DS.border2,
   },
-  badgeText: { fontSize: 11, fontWeight: '600', color: DS.accent },
+  badgeText: { fontSize: 11, fontWeight: '600', color: DS.text2 },
 
-  // ---- Infinite scroll footer ----
   loadingMore: { paddingVertical: 16, alignItems: 'center' },
   disabled: { opacity: 0.4 },
 
-  // ---- Selection action bar ----
   actionBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -141,13 +135,11 @@ export const styles = StyleSheet.create({
   },
   actionCount: { fontSize: 14, color: DS.text1, fontWeight: '600' },
 
-  // ---- Empty / states ----
   empty: { alignItems: 'center', justifyContent: 'center', paddingVertical: 60, gap: 6 },
   emptyTitle: { fontSize: 15, color: DS.text2, fontWeight: '500' },
   emptyHint: { fontSize: 13, color: DS.text3 },
   errorText: { fontSize: 13, color: DS.red, fontWeight: '500', textAlign: 'center', paddingHorizontal: 16 },
 
-  // ---- Floating create button ----
   fab: {
     position: 'absolute',
     right: 18,
@@ -155,7 +147,7 @@ export const styles = StyleSheet.create({
     height: 50,
     paddingHorizontal: 18,
     borderRadius: 25,
-    backgroundColor: DS.accent,
+    backgroundColor: DS.text1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
@@ -167,7 +159,6 @@ export const styles = StyleSheet.create({
   },
   fabLabel: { fontSize: 15, fontWeight: '700', color: '#0A0A0A' },
 
-  // ---- Bottom sheets ----
   overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
   sheetWrapper: { justifyContent: 'flex-end' },
   sheet: {
@@ -191,7 +182,6 @@ export const styles = StyleSheet.create({
   sheetSubtitle: { fontSize: 13, color: DS.text3, marginBottom: 18, lineHeight: 18 },
   divider: { height: 1, backgroundColor: DS.border, marginVertical: 16 },
 
-  // ---- Role chips (inside user sheet) ----
   chipsLabel: { fontSize: 12, fontWeight: '600', color: DS.text2, marginBottom: 10, letterSpacing: 0.2 },
   chipsWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: {
@@ -206,14 +196,13 @@ export const styles = StyleSheet.create({
     backgroundColor: DS.bg,
   },
   chipOn: {
-    backgroundColor: DS.accentDim,
-    borderColor: DS.accentBorder,
+    backgroundColor: DS.surface3,
+    borderColor: DS.border2,
   },
   chipText: { fontSize: 13, color: DS.text2, fontWeight: '500' },
-  chipTextOn: { color: DS.accent },
+  chipTextOn: { color: DS.text1 },
   chipSpinner: { width: 12, height: 12 },
 
-  // ---- Destructive ----
   deleteBtn: {
     height: 44,
     borderRadius: 8,

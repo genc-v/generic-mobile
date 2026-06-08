@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,6 +7,9 @@ import Svg, { Path, Circle } from 'react-native-svg';
 import { TopBar } from '../../../../components/layout/top-bar';
 import { styles } from '../../../../styles/app/org-settings.styles';
 import { DS } from '../../../../constants/ds';
+import { cache, CACHE_KEYS } from '../../../../utils/cache';
+import { organisationService } from '../../../../services/organisation.service';
+import { OrgRoleName } from '../../../../types/organisation.types';
 
 function OrgIcon() {
   return (
@@ -36,6 +40,15 @@ function KeyIcon() {
   );
 }
 
+function TransferIcon() {
+  return (
+    <Svg width={18} height={18} viewBox="0 0 18 18" fill="none">
+      <Path d="M3 5h12M11 2l4 3-4 3" stroke={DS.text1} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" />
+      <Path d="M15 13H3M7 10l-4 3 4 3" stroke={DS.text1} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
 function NavRow({ icon, label, sub, onPress }: { icon: React.ReactNode; label: string; sub: string; onPress: () => void }) {
   return (
     <TouchableOpacity style={styles.navRow} onPress={onPress} activeOpacity={0.7}>
@@ -54,6 +67,26 @@ function NavRow({ icon, label, sub, onPress }: { icon: React.ReactNode; label: s
 export default function SettingsMenu() {
   const { orgId } = useLocalSearchParams<{ orgId: string }>();
   const router = useRouter();
+
+  const [role, setRole] = useState<OrgRoleName | null>(
+    cache.getSync<OrgRoleName>(CACHE_KEYS.orgRole(orgId)) ?? null,
+  );
+
+  useEffect(() => {
+    let active = true;
+    if (!role) {
+      organisationService.getRole(orgId)
+        .then(r => {
+          if (!active) return;
+          setRole(r.role);
+          cache.set(CACHE_KEYS.orgRole(orgId), r.role);
+        })
+        .catch(() => {});
+    }
+    return () => { active = false; };
+  }, [orgId]);
+
+  const isAdmin = role === 'Admin';
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -79,6 +112,14 @@ export default function SettingsMenu() {
           sub="Access tokens"
           onPress={() => router.push(`/(app)/${orgId}/settings/apikey`)}
         />
+        {isAdmin && (
+          <NavRow
+            icon={<TransferIcon />}
+            label="Export / Import"
+            sub="Back up or restore data"
+            onPress={() => router.push(`/(app)/${orgId}/settings/export-import`)}
+          />
+        )}
       </ScrollView>
     </SafeAreaView>
   );

@@ -26,6 +26,7 @@ export const styles = StyleSheet.create({
     color: DS.text3,
     letterSpacing: 0.2,
     textTransform: 'uppercase',
+<<<<<<< HEAD
   },
   summaryCount: {
     fontSize: 12,
@@ -36,6 +37,18 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
   },
+=======
+  },
+  summaryCount: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: DS.text2,
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+>>>>>>> 7d11747ab31ea83a11d599a14b4ffdf79b2adc6c
   actionPill: {
     flex: 1,
     paddingVertical: 10,
@@ -46,8 +59,13 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   actionPillPrimary: {
+<<<<<<< HEAD
     backgroundColor: DS.accentDim,
     borderColor: DS.accentBorder,
+=======
+    backgroundColor: DS.surface3,
+    borderColor: DS.border2,
+>>>>>>> 7d11747ab31ea83a11d599a14b4ffdf79b2adc6c
   },
   actionPillMuted: {
     backgroundColor: DS.surface2,
@@ -59,7 +77,11 @@ export const styles = StyleSheet.create({
     letterSpacing: -0.1,
   },
   actionPillTextPrimary: {
+<<<<<<< HEAD
     color: DS.accent,
+=======
+    color: DS.text1,
+>>>>>>> 7d11747ab31ea83a11d599a14b4ffdf79b2adc6c
   },
   actionPillTextMuted: {
     color: DS.text2,
@@ -92,8 +114,13 @@ export const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   cardUnread: {
+<<<<<<< HEAD
     backgroundColor: 'rgba(139,92,246,0.06)',
     borderColor: DS.accentBorder,
+=======
+    backgroundColor: DS.surface3,
+    borderColor: DS.border2,
+>>>>>>> 7d11747ab31ea83a11d599a14b4ffdf79b2adc6c
   },
   cardAccent: {
     position: 'absolute',
@@ -101,7 +128,11 @@ export const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: 3,
+<<<<<<< HEAD
     backgroundColor: DS.accentStrong,
+=======
+    backgroundColor: DS.text1,
+>>>>>>> 7d11747ab31ea83a11d599a14b4ffdf79b2adc6c
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
   },
@@ -115,6 +146,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
   },
   iconBoxUnread: {
+<<<<<<< HEAD
     backgroundColor: DS.accentDim,
     borderColor: DS.accentBorder,
   },
@@ -159,6 +191,49 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: DS.border,
   },
+=======
+    backgroundColor: DS.surface2,
+    borderColor: DS.border2,
+  },
+  iconBoxRead: {
+    backgroundColor: DS.surface2,
+    borderColor: DS.border,
+  },
+  body: {
+    flex: 1,
+    gap: 6,
+    paddingTop: 1,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  newBadge: {
+    paddingVertical: 2,
+    paddingHorizontal: 7,
+    borderRadius: 4,
+    backgroundColor: DS.surface2,
+    borderWidth: 1,
+    borderColor: DS.border2,
+  },
+  newBadgeText: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: DS.text1,
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+  },
+  timePill: {
+    paddingVertical: 2,
+    paddingHorizontal: 7,
+    borderRadius: 4,
+    backgroundColor: DS.surface3,
+    borderWidth: 1,
+    borderColor: DS.border,
+  },
+>>>>>>> 7d11747ab31ea83a11d599a14b4ffdf79b2adc6c
   timePillText: {
     fontSize: 10,
     fontWeight: '500',
@@ -196,9 +271,12 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 4,
+<<<<<<< HEAD
   },
   emptyIcon: {
     fontSize: 24,
+=======
+>>>>>>> 7d11747ab31ea83a11d599a14b4ffdf79b2adc6c
   },
   emptyTitle: {
     fontSize: 16,
@@ -245,13 +323,23 @@ export const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
+<<<<<<< HEAD
     backgroundColor: DS.accentDim,
     borderWidth: 1,
     borderColor: DS.accentBorder,
+=======
+    backgroundColor: DS.surface3,
+    borderWidth: 1,
+    borderColor: DS.border2,
+>>>>>>> 7d11747ab31ea83a11d599a14b4ffdf79b2adc6c
   },
   retryText: {
     fontSize: 13,
     fontWeight: '600',
+<<<<<<< HEAD
     color: DS.accent,
+=======
+    color: DS.text1,
+>>>>>>> 7d11747ab31ea83a11d599a14b4ffdf79b2adc6c
   },
 });

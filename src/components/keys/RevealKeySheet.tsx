@@ -4,7 +4,7 @@ import Svg, { Path, Circle } from 'react-native-svg';
 import { PrimaryBtn } from '../ui/button';
 import { ApiKey } from '../../types/organisation.types';
 import { DS } from '../../constants/ds';
-import { styles } from '../../styles/app/api-keys.styles';
+import { styles } from '../../styles/app/api-key-sheet.styles';
 
 type Props = {
   apiKey: ApiKey | null;

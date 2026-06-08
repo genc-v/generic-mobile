@@ -8,10 +8,7 @@ import {
   UserSearchParams,
 } from '../types/user-management.types';
 
-// Admin-only user & role management. These endpoints live on the user service
-// (https://user.jonfjz.dev/api) under /user and /roles and require an admin JWT.
 export const userManagementService = {
-  // ---- Users ----
   async listUsers(pageNumber = 1, pageSize = 20): Promise<PaginatedUsers> {
     return executeApiRequest<PaginatedUsers>({
       microservice: Microservice.USER,
@@ -70,7 +67,6 @@ export const userManagementService = {
     });
   },
 
-  // ---- Roles ----
   async listRoles(): Promise<Role[]> {
     const result = await executeApiRequest<Role[]>({
       microservice: Microservice.ROLES,
@@ -104,7 +100,6 @@ export const userManagementService = {
     });
   },
 
-  // ---- Role assignment ----
   async getUserRoles(userId: string): Promise<UserRole[]> {
     const result = await executeApiRequest<UserRole[]>({
       microservice: Microservice.ROLES,

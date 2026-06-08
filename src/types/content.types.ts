@@ -49,6 +49,7 @@ export interface ContentDTO {
   categoryId: string | null;
   categoryName: string | null;
   organisationId: string;
+  userId: string | null;
   createdOn: string;
   updatedOn: string;
   tags: TagDTO[] | null;
