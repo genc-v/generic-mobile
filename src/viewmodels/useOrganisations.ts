@@ -27,12 +27,9 @@ export function useOrganisations() {
   const [error, setError] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const { unreadCount } = useNotificationUnreadCount();
-<<<<<<< HEAD
-=======
   const cachedProfile = cache.getSync<Profile>(CACHE_KEYS.profile);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(cachedProfile?.avatarUrl ?? null);
   const [initials, setInitials] = useState<string>(profileInitials(cachedProfile));
->>>>>>> 7d11747ab31ea83a11d599a14b4ffdf79b2adc6c
 
   const currentPage = useRef(1);
   const hasMore = useRef(true);
@@ -110,11 +107,7 @@ export function useOrganisations() {
   return {
     orgs, totalCount, loading, loadingMore, error,
     showCreate, setShowCreate, hasMore,
-<<<<<<< HEAD
-    unreadCount,
-=======
     unreadCount, avatarUrl, initials,
->>>>>>> 7d11747ab31ea83a11d599a14b4ffdf79b2adc6c
     handleRefresh, handleEndReached, handleOrgCreated, goToProfile, goToNotifications, goToOrg,
   };
 }

@@ -20,7 +20,7 @@ export default function Login() {
           <Text style={styles.subtitle}>Sign in to continue.</Text>
           <Input label="Email" placeholder="you@example.com" value={vm.email} onChangeText={vm.setEmail} keyboardType="email-address" autoComplete="email" />
           <Input label="Password" placeholder="••••••••" value={vm.password} onChangeText={vm.setPassword} secureTextEntry autoComplete="password" />
-          <TouchableOpacity style={styles.forgotWrap}>
+          <TouchableOpacity style={styles.forgotWrap} onPress={vm.goToForgotPassword}>
             <Text style={styles.forgot}>Forgot password?</Text>
           </TouchableOpacity>
           {vm.error && <Text style={styles.error}>{vm.error}</Text>}

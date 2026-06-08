@@ -13,8 +13,8 @@ export function useNotificationUnreadCount() {
 
   const refresh = useCallback(async () => {
     try {
-      const items = await fetchNotifications();
-      setUnreadCount(countUnreadNotifications(items));
+      const result = await fetchNotifications();
+      setUnreadCount(countUnreadNotifications(result.items));
     } catch {
       // Keep the last count if the request fails.
     }

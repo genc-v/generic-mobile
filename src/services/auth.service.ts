@@ -7,6 +7,8 @@ import {
   AuthRefreshResponse,
   AuthRegisterResponse,
   Auth2faLoginResponse,
+  AuthForgotPasswordResponse,
+  AuthResetPasswordResponse,
 } from "../types/api.types";
 
 export const SECURE_STORE_KEYS = {
@@ -107,6 +109,37 @@ class AuthService {
     }
 
     return result;
+  }
+
+  async forgotPassword(email: string): Promise<AuthForgotPasswordResponse> {
+    const response = await fetch(`${AUTH_API_URL}/forgot-password`, {
+      method: "POST",
+      headers: AUTH_HEADERS,
+      body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Forgot password failed with status ${response.status}`);
+    }
+
+    return response.json();
+  }
+
+  async resetPassword(
+    code: string,
+    newPassword: string,
+  ): Promise<AuthResetPasswordResponse> {
+    const response = await fetch(`${AUTH_API_URL}/reset-password`, {
+      method: "POST",
+      headers: AUTH_HEADERS,
+      body: JSON.stringify({ code, newPassword }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Reset password failed with status ${response.status}`);
+    }
+
+    return response.json();
   }
 
   async register(

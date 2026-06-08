@@ -38,5 +38,12 @@ export function useLogin() {
     router.replace('/(auth)/register');
   }
 
-  return { email, setEmail, password, setPassword, error, loading, handleLogin, goToRegister };
+  function goToForgotPassword() {
+    router.push('/(auth)/forgot-password');
+  }
+
+  return {
+    email, setEmail, password, setPassword, error, loading,
+    handleLogin, goToRegister, goToForgotPassword,
+  };
 }

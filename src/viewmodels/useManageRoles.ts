@@ -38,7 +38,6 @@ export function useManageRoles() {
     setEditing(null);
     setName('');
     setDescription('');
-    setSheetError(null);
     setSheetOpen(true);
   }
 
@@ -46,7 +45,6 @@ export function useManageRoles() {
     setEditing(role);
     setName(role.name);
     setDescription(role.description ?? '');
-    setSheetError(null);
     setSheetOpen(true);
   }
 

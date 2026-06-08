@@ -7,41 +7,7 @@ import { Skeleton } from '../../../components/ui/Skeleton';
 import { NotificationRow } from '../../../components/notifications/NotificationRow';
 import { useNotifications } from '../../../viewmodels/useNotifications';
 import { styles } from '../../../styles/app/profile/notifications.styles';
-<<<<<<< HEAD
-
-function NotificationRow({ item }: { item: NotificationItem }) {
-  const unread = !item.isRead;
-  const time = formatRelativeTime(item.createdAt);
-
-  return (
-    <View style={[styles.card, unread && styles.cardUnread]}>
-      {unread && <View style={styles.cardAccent} />}
-      <View style={[styles.iconBox, unread ? styles.iconBoxUnread : styles.iconBoxRead]}>
-        <Text style={styles.iconText}>{notificationIcon(item.type)}</Text>
-      </View>
-      <View style={styles.body}>
-        <View style={styles.metaRow}>
-          {unread && (
-            <View style={styles.newBadge}>
-              <Text style={styles.newBadgeText}>New</Text>
-            </View>
-          )}
-          {time ? (
-            <View style={styles.timePill}>
-              <Text style={styles.timePillText}>{time}</Text>
-            </View>
-          ) : null}
-        </View>
-        <Text style={[styles.message, unread ? styles.messageUnread : styles.messageRead]}>
-          {item.message}
-        </Text>
-      </View>
-    </View>
-  );
-}
-=======
 import { DS } from '../../../constants/ds';
->>>>>>> 7d11747ab31ea83a11d599a14b4ffdf79b2adc6c
 
 export default function NotificationsScreen() {
   const vm = useNotifications();
@@ -67,10 +33,7 @@ export default function NotificationsScreen() {
               disabled={!vm.canMarkAllRead}
               activeOpacity={0.7}
             >
-<<<<<<< HEAD
-              <Text style={[styles.actionPillText, styles.actionPillTextPrimary]}>
-                Mark all read
-              </Text>
+              <Text style={[styles.actionPillText, styles.actionPillTextPrimary]}>Mark all read</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.actionPill, styles.actionPillMuted]}
@@ -79,12 +42,7 @@ export default function NotificationsScreen() {
               disabled={!vm.canClearAll}
               activeOpacity={0.7}
             >
-              <Text style={[styles.actionPillText, styles.actionPillTextMuted]}>
-                Clear all
-              </Text>
-=======
-              <Text style={[styles.actionPillText, styles.actionPillTextPrimary]}>Mark all read</Text>
->>>>>>> 7d11747ab31ea83a11d599a14b4ffdf79b2adc6c
+              <Text style={[styles.actionPillText, styles.actionPillTextMuted]}>Clear all</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -106,14 +64,10 @@ export default function NotificationsScreen() {
       ) : !vm.hasItems ? (
         <View style={styles.center}>
           <View style={styles.emptyIconWrap}>
-<<<<<<< HEAD
-            <Text style={styles.emptyIcon}>🔔</Text>
-=======
             <Svg width={24} height={24} viewBox="0 0 16 16" fill="none">
               <Path d="M8 1.5A4.5 4.5 0 0 0 3.5 6v3.5L2 11h12l-1.5-1.5V6A4.5 4.5 0 0 0 8 1.5Z" stroke={DS.text3} strokeWidth={1.4} strokeLinejoin="round" />
               <Path d="M6.5 11.5a1.5 1.5 0 0 0 3 0" stroke={DS.text3} strokeWidth={1.4} strokeLinecap="round" />
             </Svg>
->>>>>>> 7d11747ab31ea83a11d599a14b4ffdf79b2adc6c
           </View>
           <Text style={styles.emptyTitle}>No notifications yet</Text>
           <Text style={styles.emptyHint}>{vm.emptyHint}</Text>
@@ -129,10 +83,6 @@ export default function NotificationsScreen() {
           contentContainerStyle={styles.listContent}
           data={vm.notifications}
           keyExtractor={item => item.id}
-<<<<<<< HEAD
-          renderItem={({ item }) => <NotificationRow item={item} />}
-          showsVerticalScrollIndicator={false}
-=======
           renderItem={({ item }) => <NotificationRow item={item} onMarkRead={vm.markRead} />}
           showsVerticalScrollIndicator={false}
           onEndReached={vm.loadMore}
@@ -142,7 +92,6 @@ export default function NotificationsScreen() {
               ? <ActivityIndicator style={{ marginVertical: 16 }} color={DS.text3} />
               : null
           }
->>>>>>> 7d11747ab31ea83a11d599a14b4ffdf79b2adc6c
         />
       )}
     </SafeAreaView>

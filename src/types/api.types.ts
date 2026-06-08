@@ -69,6 +69,16 @@ export interface AuthRegisterResponse {
   };
 }
 
+export interface AuthForgotPasswordResponse {
+  success: boolean;
+  data: null;
+}
+
+export interface AuthResetPasswordResponse {
+  success: boolean;
+  data: null;
+}
+
 export interface AccountResponse {
   success: boolean;
   data?: {
