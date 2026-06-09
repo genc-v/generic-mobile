@@ -12,6 +12,7 @@
     },
     "android": {
       "usesCleartextTraffic": true,
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#09090B",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -39,6 +40,7 @@
         }
       ],
       "expo-secure-store",
+      "expo-notifications",
       [
         "expo-image-picker",
         {
