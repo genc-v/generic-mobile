@@ -27,8 +27,13 @@ export function useLogin() {
       } else {
         router.replace('/(app)');
       }
-    } catch {
-      setError('Something went wrong. Please try again.');
+    } catch (err) {
+      const status = (err as { status?: number })?.status;
+      setError(
+        status === 400 || status === 404
+          ? 'Invalid email or password.'
+          : 'Something went wrong. Please try again.',
+      );
     } finally {
       setLoading(false);
     }

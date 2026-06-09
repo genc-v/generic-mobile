@@ -57,7 +57,9 @@ class AuthService {
     });
 
     if (!response.ok) {
-      throw new Error(`Login failed with status ${response.status}`);
+      const error = new Error(`Login failed with status ${response.status}`) as Error & { status?: number };
+      error.status = response.status;
+      throw error;
     }
 
     const result: AuthLoginResponse = await response.json();
